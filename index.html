@@ -1,909 +1,994 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ôn tập Sinh học 12 - Giữa HK1 | Lê Thánh Tông</title>
-<style>
-  :root {
-    --primary: #0d6efd;
-    --success: #198754;
-    --danger: #dc3545;
-    --warning: #ffc107;
-    --bg: #f0f4f8;
-    --card: #ffffff;
-    --text: #212529;
-    --muted: #6c757d;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.5;
-    min-height: 100vh;
-  }
-  .header {
-    background: linear-gradient(135deg, #0d6efd, #0a58ca);
-    color: white;
-    padding: 1.2rem 1rem;
-    text-align: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,.15);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .header h1 { font-size: 1.35rem; font-weight: 700; }
-  .header p { font-size: .85rem; opacity: .9; margin-top: .3rem; }
-  .stats-bar {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    padding: .8rem;
-    background: white;
-    border-bottom: 1px solid #dee2e6;
-    position: sticky;
-    top: 72px;
-    z-index: 99;
-  }
-  .stat {
-    text-align: center;
-    min-width: 70px;
-  }
-  .stat .num { font-size: 1.4rem; font-weight: 700; }
-  .stat .label { font-size: .75rem; color: var(--muted); }
-  .stat.correct .num { color: var(--success); }
-  .stat.wrong .num { color: var(--danger); }
-  .stat.remaining .num { color: var(--primary); }
-  .container {
-    max-width: 780px;
-    margin: 0 auto;
-    padding: 1.2rem 1rem 3rem;
-  }
-  .section-title {
-    background: #e7f1ff;
-    color: #0a58ca;
-    padding: .6rem 1rem;
-    border-radius: 8px;
-    font-weight: 600;
-    margin: 1.5rem 0 .8rem;
-    font-size: 1rem;
-  }
-  .card {
-    background: var(--card);
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.06);
-    padding: 1.2rem;
-    margin-bottom: 1rem;
-    border: 2px solid transparent;
-    transition: border-color .2s;
-  }
-  .card.answered-correct { border-color: var(--success); }
-  .card.answered-wrong { border-color: var(--danger); }
-  .q-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: .5rem;
-    margin-bottom: .8rem;
-  }
-  .q-num {
-    background: var(--primary);
-    color: white;
-    font-weight: 700;
-    font-size: .85rem;
-    padding: .2rem .6rem;
-    border-radius: 6px;
-    white-space: nowrap;
-  }
-  .q-text { flex: 1; font-size: .95rem; }
-  .options { display: flex; flex-direction: column; gap: .5rem; }
-  .opt {
-    display: flex;
-    align-items: flex-start;
-    gap: .6rem;
-    padding: .65rem .9rem;
-    border: 1.5px solid #dee2e6;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all .15s;
-    background: #fafbfc;
-  }
-  .opt:hover:not(.disabled) { border-color: var(--primary); background: #e7f1ff; }
-  .opt.selected { border-color: var(--primary); background: #cfe2ff; }
-  .opt.correct { border-color: var(--success); background: #d1e7dd; }
-  .opt.wrong { border-color: var(--danger); background: #f8d7da; }
-  .opt.disabled { cursor: default; opacity: .85; }
-  .opt input { margin-top: 3px; accent-color: var(--primary); }
-  .tf-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .6rem;
-    margin-top: .4rem;
-  }
-  .tf-item {
-    flex: 1 1 45%;
-    min-width: 140px;
-  }
-  .tf-label {
-    font-size: .9rem;
-    margin-bottom: .35rem;
-    color: #495057;
-  }
-  .tf-btns { display: flex; gap: .4rem; }
-  .btn-tf {
-    flex: 1;
-    padding: .4rem .5rem;
-    border: 1.5px solid #dee2e6;
-    border-radius: 6px;
-    background: #fafbfc;
-    cursor: pointer;
-    font-size: .85rem;
-    font-weight: 600;
-    transition: all .15s;
-  }
-  .btn-tf:hover:not(:disabled) { border-color: var(--primary); }
-  .btn-tf.active-dung { background: #d1e7dd; border-color: var(--success); color: var(--success); }
-  .btn-tf.active-sai { background: #f8d7da; border-color: var(--danger); color: var(--danger); }
-  .btn-tf:disabled { cursor: default; opacity: .9; }
-  .answer-box {
-    margin-top: .9rem;
-    padding: .75rem 1rem;
-    border-radius: 8px;
-    font-size: .9rem;
-    display: none;
-  }
-  .answer-box.show { display: block; }
-  .answer-box.correct-ans {
-    background: #d1e7dd;
-    border-left: 4px solid var(--success);
-    color: #0f5132;
-  }
-  .answer-box.wrong-ans {
-    background: #f8d7da;
-    border-left: 4px solid var(--danger);
-    color: #842029;
-  }
-  .result-panel {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-top: 2rem;
-    text-align: center;
-    box-shadow: 0 2px 12px rgba(0,0,0,.08);
-    display: none;
-  }
-  .result-panel.show { display: block; }
-  .result-panel h2 { margin-bottom: .8rem; }
-  .score-big { font-size: 2.8rem; font-weight: 800; }
-  .score-big.good { color: var(--success); }
-  .score-big.mid { color: var(--warning); }
-  .score-big.bad { color: var(--danger); }
-  .btn-row {
-    display: flex;
-    gap: .8rem;
-    justify-content: center;
-    margin-top: 1.2rem;
-    flex-wrap: wrap;
-  }
-  .btn {
-    padding: .6rem 1.4rem;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: .95rem;
-    transition: transform .1s, box-shadow .1s;
-  }
-  .btn:active { transform: scale(.97); }
-  .btn-primary { background: var(--primary); color: white; }
-  .btn-primary:hover { box-shadow: 0 4px 12px rgba(13,110,253,.35); }
-  .btn-outline {
-    background: white;
-    border: 2px solid var(--primary);
-    color: var(--primary);
-  }
-  .btn-outline:hover { background: #e7f1ff; }
-  .progress-wrap {
-    height: 6px;
-    background: #e9ecef;
-    border-radius: 3px;
-    margin: .6rem 0 0;
-    overflow: hidden;
-  }
-  .progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #0d6efd, #20c997);
-    width: 0%;
-    transition: width .3s;
-  }
-  .filter-bar {
-    display: flex;
-    gap: .5rem;
-    flex-wrap: wrap;
-    margin-bottom: 1rem;
-    justify-content: center;
-  }
-  .filter-btn {
-    padding: .35rem .9rem;
-    border-radius: 20px;
-    border: 1.5px solid #ced4da;
-    background: white;
-    cursor: pointer;
-    font-size: .85rem;
-    font-weight: 500;
-  }
-  .filter-btn.active {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-  }
-  @media (max-width: 500px) {
-    .header h1 { font-size: 1.1rem; }
-    .stats-bar { gap: 1rem; }
-    .stat .num { font-size: 1.2rem; }
-    .tf-item { flex: 1 1 100%; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn Tập Giữa Kì 1 Sinh Học 12 - TH, THCS & THPT Lê Thánh Tông</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        sub, sup { font-size: 0.75em; vertical-align: baseline; position: relative; }
+        sub { bottom: -0.25em; }
+        sup { top: -0.5em; }
+    </style>
 </head>
-<body>
-<div class="header">
-  <h1>🧬 Ôn tập Sinh học 12 – Giữa HK1</h1>
-  <p>Trường TH, THCS & THPT Lê Thánh Tông | Năm học 2024-2025</p>
-  <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
-</div>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
 
-<div class="stats-bar">
-  <div class="stat correct"><div class="num" id="sCorrect">0</div><div class="label">Đúng</div></div>
-  <div class="stat wrong"><div class="num" id="sWrong">0</div><div class="label">Sai</div></div>
-  <div class="stat remaining"><div class="num" id="sRemain">0</div><div class="label">Còn lại</div></div>
-  <div class="stat"><div class="num" id="sPercent">0%</div><div class="label">Tỉ lệ</div></div>
-</div>
-
-<div class="container">
-  <div class="filter-bar">
-    <button class="filter-btn active" data-filter="all" onclick="filterQ(this)">Tất cả</button>
-    <button class="filter-btn" data-filter="mc" onclick="filterQ(this)">Trắc nghiệm</button>
-    <button class="filter-btn" data-filter="tf" onclick="filterQ(this)">Đúng/Sai</button>
-    <button class="filter-btn" data-filter="unanswered" onclick="filterQ(this)">Chưa làm</button>
-    <button class="filter-btn" data-filter="wrong" onclick="filterQ(this)">Câu sai</button>
-  </div>
-
-  <div id="quizArea"></div>
-
-  <div class="result-panel" id="resultPanel">
-    <h2>🎉 Kết quả ôn tập</h2>
-    <div class="score-big" id="finalScore">0%</div>
-    <p id="finalText"></p>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="resetAll()">Làm lại từ đầu</button>
-      <button class="btn btn-outline" onclick="showWrongOnly()">Xem lại câu sai</button>
-    </div>
-  </div>
-</div>
-
-<script>
-const questions = [
-  // ========== PHẦN I: TRẮC NGHIỆM ==========
-  {
-    id: 1, type: 'mc', section: 'I',
-    text: 'Hình sau đây là loại đơn phân nào của nucleic acid?',
-    options: ['A. Nucleotide cytosine (C).', 'B. Nucleotide guanine (G).', 'C. Nucleotide adenine (A).', 'D. Nucleotide thymine (T).'],
-    answer: 0,
-    explain: 'Đáp án A. (Dựa vào hình trong đề – nucleotide cytosine)'
-  },
-  {
-    id: 2, type: 'mc', section: 'I',
-    text: 'Mã di truyền là gì?',
-    options: [
-      'A. Mã bộ ba được đọc liên tục trên mRNA theo chiều 3′ – 5′.',
-      'B. Mã bộ ba trên DNA.',
-      'C. Mã bộ ba trên DNA được đọc liên tục.',
-      'D. Mã bộ ba được đọc liên tục trên mRNA theo chiều 5′ – 3′.'
-    ],
-    answer: 3,
-    explain: 'Đáp án D. Mã di truyền là mã bộ ba được đọc liên tục trên mRNA theo chiều 5′ → 3′.'
-  },
-  {
-    id: 3, type: 'mc', section: 'I',
-    text: 'Loại RNA nào đa dạng nhất?',
-    options: ['A. mRNA.', 'B. tRNA.', 'C. rRNA.', 'D. RNA enzyme.'],
-    answer: 0,
-    explain: 'Đáp án A. mRNA đa dạng nhất vì mỗi gene mã hóa một mRNA khác nhau.'
-  },
-  {
-    id: 4, type: 'mc', section: 'I',
-    text: 'Trong quá trình tái bản DNA, enzyme ligase (enzyme nối) có vai trò?',
-    options: [
-      'A. Nối các đoạn Okazaki với nhau.',
-      'B. Tách hai mạch đơn của phân tử DNA.',
-      'C. Tháo xoắn phân tử DNA.',
-      'D. Tổng hợp và kéo dài mạch mới.'
-    ],
-    answer: 0,
-    explain: 'Đáp án A. DNA ligase nối các đoạn Okazaki trên mạch chậm.'
-  },
-  {
-    id: 5, type: 'mc', section: 'I',
-    text: 'Hình sau đây mô tả cơ chế di truyền trong tế bào. Nhận định nào sau đây là Đúng về hình này?',
-    options: [
-      'A. Chiều 1 – 2 là 3′-5′.',
-      'B. Chiều của [b] là 3′-5′.',
-      'C. Chiều 3 – 4 là 3′-5′.',
-      'D. Quá trình này đã cần 6 đoạn mồi được tạo ra nhờ enzyme mRNA polymerase.'
-    ],
-    answer: 1,
-    explain: 'Đáp án B. (Dựa vào chiều tổng hợp DNA/RNA trên hình)'
-  },
-  {
-    id: 6, type: 'mc', section: 'I',
-    text: 'Khi nói đến cấu trúc và cơ chế di truyền cấp phân tử, có bao nhiêu phát biểu sau đây đúng?<br>I. Quá trình phiên mã có ở virus, vi khuẩn, sinh vật nhân thực.<br>II. Quá trình dịch mã chỉ có sinh vật nhân thực.<br>III. Ở sinh vật nhân sơ một gene có thể quy định tổng hợp nhiều loại chuỗi polypeptide khác nhau.<br>IV. Trong quá trình nguyên phân sự tái bản DNA diễn ra vào pha S của kì trung gian.<br>V. Ở kì giữa giảm phân 1 các NST kép tập trung 1 hàng ở mặt phẳng xích đạo; ở kì giữa của giảm phân 2 các NST kép tập trung 2 hàng ở mặt phẳng xích đạo.',
-    options: ['A. 2.', 'B. 3.', 'C. 4.', 'D. 1.'],
-    answer: 0,
-    explain: 'Đáp án A (2 phát biểu đúng). I đúng, IV đúng. II sai (dịch mã có ở cả nhân sơ), III sai, V sai (kì giữa giảm phân II NST đơn tập trung 1 hàng).'
-  },
-  {
-    id: 7, type: 'mc', section: 'I',
-    text: 'Trong cơ chế điều hòa hoạt động gene của operon Lac ở vi khuẩn E. coli, gene điều hòa có vai trò gì?',
-    options: [
-      'A. Quy định tổng hợp protein ức chế.',
-      'B. Khởi đầu quá trình phiên mã của các gene cấu trúc.',
-      'C. Quy định tổng hợp enzyme phân giải lactose.',
-      'D. Kết thúc quá trình phiên mã của các gene cấu trúc.'
-    ],
-    answer: 0,
-    explain: 'Đáp án A. Gene điều hòa (I) quy định tổng hợp protein ức chế.'
-  },
-  {
-    id: 8, type: 'mc', section: 'I',
-    text: 'Có bao nhiêu phát biểu sau đây đến hoạt động gene / điều hòa hoạt động gene ở sinh vật?<br>I. Điều hoà hoạt động của gene sau phiên mã thực chất là điều khiển sự trưởng thành và thời gian tồn tại của mRNA.<br>II. Ở sinh vật nhân thực, hai gene khác nhau (không bị đột biến) có thể tổng hợp nên các phân tử protein giống nhau.<br>III. Ở sinh vật nhân thực, khi gene bị đột biến thì sản phẩm protein của nó phải khác với sản phẩm protein của gene bình thường.<br>IV. Hoạt động của gene chịu sự kiểm soát chủ yếu của gene điều hoà.',
-    options: ['A. 1.', 'B. 2.', 'C. 3.', 'D. 4.'],
-    answer: 1,
-    explain: 'Đáp án B (2 phát biểu đúng). I và IV đúng. II có thể đúng trong một số trường hợp (gene lặp), III sai vì đột biến có thể không làm thay đổi protein (đồng nghĩa).'
-  },
-  {
-    id: 9, type: 'mc', section: 'I',
-    text: 'Một base nitrogen của gene trở thành dạng hiếm thì quá trình tái bản DNA sẽ phát sinh dạng đột biến gì?',
-    options: [
-      'A. Mất đoạn nhiễm sắc thể.',
-      'B. Thêm một cặp nucleotide.',
-      'C. Thay thế một cặp nucleotide.',
-      'D. Mất một cặp nucleotide.'
-    ],
-    answer: 2,
-    explain: 'Đáp án C. Base dạng hiếm gây đột biến thay thế cặp nucleotide.'
-  },
-  {
-    id: 10, type: 'mc', section: 'I',
-    text: 'Loại đột biến nào sau đây làm cho gene đột biến tăng 2 liên kết hydrogen so với gene ban đầu?',
-    options: [
-      'A. Đột biến mất 1 cặp A-T.',
-      'B. Đột biến thêm 1 cặp A-T.',
-      'C. Đột biến thay thế 2 cặp G–C bằng 2 cặp A-T.',
-      'D. Đột biến thay thế 1 cặp A-T bằng 1 cặp G-C.'
-    ],
-    answer: 3,
-    explain: 'Đáp án D. A-T có 2 liên kết H, G-C có 3 → thay A-T bằng G-C tăng 1 liên kết? Chờ: thực ra tăng 1, nhưng theo đáp án đề là D (tăng 1, nhưng câu hỏi ghi "tăng 2" có thể nhầm). Theo lý thuyết: A-T→G-C tăng 1 liên kết H. Có thể đáp án là D theo đề.'
-  },
-  {
-    id: 11, type: 'mc', section: 'I',
-    text: 'Phát biểu nào sau đây là đúng khi nói về đột biến gen?',
-    options: [
-      'A. Đột biến xảy ra ở tế bào soma (đột biến soma) luôn biểu hiện ra cơ thể.',
-      'B. Đột biến gene xảy ra trong những lần nguyên phân đầu tiên của hợp tử luôn biểu hiện ra kiểu hình cơ thể.',
-      'C. Đột biến xảy ra trong giảm phân hình thành giao tử không biểu hiện ra kiểu hình ở thế hệ sau.',
-      'D. Đột biến soma có thể di truyền bằng sinh sản sinh dưỡng.'
-    ],
-    answer: 3,
-    explain: 'Đáp án D. Đột biến soma có thể di truyền qua sinh sản sinh dưỡng.'
-  },
-  {
-    id: 12, type: 'mc', section: 'I',
-    text: 'Hóa chất gây đột biến 5-BU thường gây đột biến gene dạng',
-    options: [
-      'A. thay thế cặp G–C bằng T–A.',
-      'B. thay thế cặp G–C bằng cặp C–G.',
-      'C. thay thế cặp A–T bằng T–A.',
-      'D. thay thế cặp A–T bằng G–C.'
-    ],
-    answer: 3,
-    explain: 'Đáp án D. 5-BU (5-bromouracil) gây thay thế A-T → G-C.'
-  },
-  {
-    id: 13, type: 'mc', section: 'I',
-    text: 'Trong các dạng đột biến sau, có bao nhiêu dạng đột biến không làm thay đổi tỉ lệ (A + G)/(T + C) của gen?<br>I. Thay thế một cặp A-T bằng cặp G-C<br>II. Thay thế một cặp A-T bằng một cặp T-A<br>III. Thêm một cặp nucleotide<br>IV. Mất một cặp nucleotide',
-    options: ['A. 3', 'B. 4', 'C. 1', 'D. 2'],
-    answer: 3,
-    explain: 'Đáp án D (2 dạng). II không đổi (vẫn A=T, G=C), I làm thay đổi. III và IV thường làm thay đổi tỉ lệ.'
-  },
-  {
-    id: 14, type: 'mc', section: 'I',
-    text: 'Một gene cấu trúc dài 4080 Å, có tỉ lệ A/G = 3/2, gene này bị đột biến thay thế một cặp A–T bằng một cặp G–C. Số lượng nucleotide từng loại của gene sau đột biến là bao nhiêu?',
-    options: [
-      'A. A = T = 720; G = C = 480.',
-      'B. A = T = 419; G = C = 721.',
-      'C. A = T = 719; G = C = 481.',
-      'D. A = T = 721; G = C = 479.'
-    ],
-    answer: 2,
-    explain: 'Đáp án C. Chiều dài 4080 Å → số cặp nucleotide = 4080/3.4 = 1200 cặp → 2400 nucleotide. A/G=3/2 → A=T=720, G=C=480. Sau thay A-T→G-C: A=T=719, G=C=481.'
-  },
-  {
-    id: 15, type: 'mc', section: 'I',
-    text: 'Trình tự nucleotide trong DNA có tác dụng bảo vệ và làm các NST không dính vào nhau nằm ở đâu?',
-    options: ['A. Tâm động.', 'B. Hai đầu mút NST.', 'C. Eo thứ cấp.', 'D. Điểm khởi sự nhân đôi.'],
-    answer: 1,
-    explain: 'Đáp án B. Telomere (hai đầu mút NST) bảo vệ và ngăn NST dính vào nhau.'
-  },
-  {
-    id: 16, type: 'mc', section: 'I',
-    text: 'Mức cấu trúc xoắn nào của nhiễm sắc thể có đường kính 10 nm?',
-    options: ['A. Sợi DNA.', 'B. Sợi cơ bản.', 'C. Sợi nhiễm sắc.', 'D. Cấu trúc siêu xoắn.'],
-    answer: 1,
-    explain: 'Đáp án B. Sợi cơ bản (nucleosome) có đường kính 10 nm.'
-  },
-  {
-    id: 17, type: 'mc', section: 'I',
-    text: 'Xét vùng tương đồng của X và Y. Trên NST giới tính X mang các gene ABC, thì NST Y mang gene như thế nào?',
-    options: ['A. MNO.', 'B. ABC.', 'C. abc.', 'D. ABCDE.'],
-    answer: 1,
-    explain: 'Đáp án B. Vùng tương đồng của X và Y mang các gene giống nhau (ABC).'
-  },
-  {
-    id: 18, type: 'mc', section: 'I',
-    text: 'Cho các NST mang các gene sau đây, phát biểu nào sau đây đúng?<br>I. NST 1: AB.DE.<br>II. NST 2: ab.De.<br>III. NST 3: MnO.PQ.<br>IV. NST 4: MNO.PQ.',
-    options: [
-      'A. I và II là cùng cặp tương đồng.',
-      'B. I và III là cùng cặp tương đồng.',
-      'C. I và IV là cùng cặp tương đồng.',
-      'D. II và IV là cùng cặp tương đồng.'
-    ],
-    answer: 0,
-    explain: 'Đáp án A. NST 1 và 2 mang gene tương ứng (AB.DE / ab.De) → cùng cặp tương đồng.'
-  },
-  {
-    id: 19, type: 'mc', section: 'I',
-    text: 'Tỉ lệ các loại giao tử ABD tạo ra từ kiểu gen AaBbDd là:',
-    options: ['A. 25%.', 'B. 50%.', 'C. 12,5%.', 'D. 100%.'],
-    answer: 2,
-    explain: 'Đáp án C. 1/2 × 1/2 × 1/2 = 1/8 = 12,5%.'
-  },
-  {
-    id: 20, type: 'mc', section: 'I',
-    text: 'Hai nhà khoa học nào đã phát hiện ra cơ chế điều hoà opêron?',
-    options: ['A. Mendel và Morgan.', 'B. Jacob và Monod.', 'C. Lamarck và Darwin.', 'D. Hardy và Weinberg.'],
-    answer: 1,
-    explain: 'Đáp án B. François Jacob và Jacques Monod phát hiện operon.'
-  },
-  {
-    id: 21, type: 'mc', section: 'I',
-    text: 'Xét phép lai P: AaBbDD × AaBbDd. Thế hệ F1 thu được kiểu gen aaBbDd với tỉ lệ:',
-    options: ['A. 1/16', 'B. 1/4', 'C. 1/8', 'D. 1/64'],
-    answer: 0,
-    explain: 'Đáp án A. aa: 1/4; Bb: 1/2; Dd: 1/2 → 1/4 × 1/2 × 1/2 = 1/16.'
-  },
-  {
-    id: 22, type: 'mc', section: 'I',
-    text: 'Ở người, mắc Hội chứng Klinefelter có kiểu nhiễm sắc thể giới tính là:',
-    options: ['A. XYY.', 'B. XXY.', 'C. XO.', 'D. XXX.'],
-    answer: 1,
-    explain: 'Đáp án B. Hội chứng Klinefelter: XXY.'
-  },
-  {
-    id: 23, type: 'mc', section: 'I',
-    text: 'Yếu tố quyết định tính đặc thù chức năng của protein là:',
-    options: [
-      'A. số lượng amino acid.',
-      'B. trình tự sắp xếp các amino acid.',
-      'C. môi trường tế bào.',
-      'D. nhiệt độ.'
-    ],
-    answer: 1,
-    explain: 'Đáp án B. Trình tự amino acid quyết định cấu trúc và chức năng protein.'
-  },
-  {
-    id: 24, type: 'mc', section: 'I',
-    text: 'Sản phẩm của gene là gì?',
-    options: [
-      'A. Phân tử protein hay mRNA.',
-      'B. Phân tử RNA hay chuỗi polypeptide.',
-      'C. Polypeptide hay phân tử mRNA, tRNA, rRNA.',
-      'D. Phân tử protein hay phân tử tRNA, rRNA.'
-    ],
-    answer: 2,
-    explain: 'Đáp án C. Gene có thể mã hóa polypeptide hoặc các loại RNA (mRNA, tRNA, rRNA).'
-  },
-  {
-    id: 25, type: 'mc', section: 'I',
-    text: 'Quá trình tái bản DNA có bao nhiêu đặc điểm sau đây?<br>I. Diễn ra ở kì trung gian của quá trình phân bào.<br>II. Diễn ra theo nguyên tắc bổ sung và nguyên tắc bán bảo toàn.<br>III. Chỉ có một mạch đơn được dùng làm khuôn để tổng hợp mạch mới.<br>IV. Đoạn Okazaki được tổng hợp theo chiều 3′ – 5′.<br>V. Nếu không có sai sót thì qua một lần nhân đôi tạo ra hai DNA con có cấu trúc giống DNA mẹ.',
-    options: ['A. 2', 'B. 3', 'C. 4', 'D. 5'],
-    answer: 1,
-    explain: 'Đáp án B (3 đặc điểm đúng: I, II, V). III sai (cả 2 mạch đều là khuôn), IV sai (Okazaki tổng hợp 5′→3′).'
-  },
-  {
-    id: 26, type: 'mc', section: 'I',
-    text: 'Đâu không phải codon kết thúc dịch mã?',
-    options: ['A. UAA.', 'B. UCA.', 'C. UAG.', 'D. UGA.'],
-    answer: 1,
-    explain: 'Đáp án B. UCA là codon mã hóa serine, không phải stop codon. Stop: UAA, UAG, UGA.'
-  },
-  {
-    id: 27, type: 'mc', section: 'I',
-    text: 'Khi nói về quá trình điều hòa biểu hiện gene theo mô hình operon Lac, phát biểu nào sau đây đúng?',
-    options: [
-      'A. Trong điều kiện không có lactose, nhóm gen cấu trúc sẽ tiến hành phiên mã.',
-      'B. Gene điều hòa và nhóm gene cấu trúc có chung một cơ chế điều hòa.',
-      'C. Gene điều hòa chỉ phiên mã khi môi trường không có lactose.',
-      'D. Nhóm gene cấu trúc chỉ phiên mã khi protein ức chế không bám vào vùng vận hành O.'
-    ],
-    answer: 3,
-    explain: 'Đáp án D. Khi protein ức chế không bám vào O → RNA pol gắn được → phiên mã xảy ra.'
-  },
-  {
-    id: 28, type: 'mc', section: 'I',
-    text: 'Hoạt động của gene chịu sự kiểm soát chủ yếu của gene nào?',
-    options: ['A. Gene ức chế', 'B. Gene điều hoà.', 'C. Gene sản xuất.', 'D. Gene khởi động'],
-    answer: 1,
-    explain: 'Đáp án B. Gene điều hòa kiểm soát chủ yếu hoạt động của gene.'
-  },
-  {
-    id: 29, type: 'mc', section: 'I',
-    text: 'Điều khẳng định nào dưới đây về hoạt động của operon Lac là đúng?',
-    options: [
-      'A. Khi môi trường có lactose thì phân tử đường này sẽ liên kết với RNA polymerase làm cho nó bị biến đổi cấu hình nên không thể liên kết được với vùng vận hành.',
-      'B. Khi môi trường không có lactose thì phân tử RNA polymerase không thể liên kết được với vùng vận hành.',
-      'C. Khi môi trường có lactose thì phân tử đường này sẽ liên kết với phân tử protein ức chế làm cho nó bị biến đổi cấu hình nên không thể liên kết được với vùng vận hành.',
-      'D. Khi môi trường không có lactose thì phân tử protein ức chế sẽ liên kết với RNA polymerase làm cho nó bị biến đổi cấu hình nên có thể liên kết được với vùng khởi động.'
-    ],
-    answer: 2,
-    explain: 'Đáp án C. Lactose gắn protein ức chế → protein đổi cấu hình → không gắn được vào O → phiên mã diễn ra.'
-  },
-  {
-    id: 30, type: 'mc', section: 'I',
-    text: 'Khi đột biến gene đã phát sinh thì nó sẽ được nhân lên thông qua quá trình nào sau đây?',
-    options: ['A. Tái bản DNA.', 'B. Phiên mã.', 'C. Dịch mã.', 'D. Điều hòa hoạt động gene.'],
-    answer: 0,
-    explain: 'Đáp án A. Đột biến được nhân lên qua tái bản DNA.'
-  },
-  {
-    id: 31, type: 'mc', section: 'I',
-    text: 'Loại đột biến nào sau đây làm cho gene đột biến giảm 1 liên kết hydrogen so với gene ban đầu?',
-    options: [
-      'A. Đột biến mất 1 cặp A-T.',
-      'B. Đột biến thêm 1 cặp A-T.',
-      'C. Đột biến thay thế 2 cặp G–C bằng 2 cặp A-T.',
-      'D. Đột biến thay thế 1 cặp G–C bằng 1 cặp A-T.'
-    ],
-    answer: 3,
-    explain: 'Đáp án D. G-C (3 liên kết) → A-T (2 liên kết) → giảm 1 liên kết H.'
-  },
-  {
-    id: 32, type: 'mc', section: 'I',
-    text: 'Khi nói đến đột biến Gene, phát biểu nào sau đây đúng?',
-    options: [
-      'A. Phát sinh trong nguyên phân của tế bào mô sinh dưỡng sẽ di truyền cho đời sau qua sinh sản hữu tính.',
-      'B. Thường xuất hiện đồng loạt trên các cá thể cùng loài sống trong cùng một điều kiện sống.',
-      'C. Phát sinh trong giảm phân sẽ đi vào giao tử và di truyền được cho thế hệ sau qua sinh sản hữu tính.',
-      'D. Phát sinh trong giảm phân sẽ được nhân lên ở một mô cơ thể và biểu hiện kiểu hình ở một phần cơ thể.'
-    ],
-    answer: 2,
-    explain: 'Đáp án C. Đột biến trong giảm phân đi vào giao tử → di truyền cho thế hệ sau.'
-  },
-  {
-    id: 33, type: 'mc', section: 'I',
-    text: 'Guanine dạng hiếm (G*) kết cặp với Thymine (T) trong quá trình tái bản DNA, tạo nên đột biến điểm dạng',
-    options: [
-      'A. thêm một cặp G–C.',
-      'B. thay thế cặp A–T bằng cặp G–C.',
-      'C. mất một cặp A–T.',
-      'D. thay thế cặp G–C bằng cặp A–T.'
-    ],
-    answer: 3,
-    explain: 'Đáp án D. G* kết cặp với T → sau tái bản tạo đột biến thay thế G-C bằng A-T.'
-  },
-  {
-    id: 34, type: 'mc', section: 'I',
-    text: 'Trong trường hợp đột biến thêm 1 cặp nucleotide. Số liên kết hydrogene của gene đột biến sẽ thay đổi như thế nào so với gene ban đầu?',
-    options: [
-      'A. Số liên kết tăng 2',
-      'B. Số liên kết tăng 3',
-      'C. Số liên kết không thay đổi',
-      'D. Số liên kết tăng 2 hoặc tăng 3 liên kết'
-    ],
-    answer: 3,
-    explain: 'Đáp án D. Thêm A-T → +2 liên kết; thêm G-C → +3 liên kết.'
-  },
-  {
-    id: 35, type: 'mc', section: 'I',
-    text: 'Trình tự nucleotide đặc biệt trong DNA của NST, là vị trí liên kết với thoi phân bào được gọi là gì?',
-    options: ['A. Tâm động.', 'B. Hai đầu mút NST.', 'C. Eo thứ cấp.', 'D. Điểm khởi đầu nhân đôi.'],
-    answer: 0,
-    explain: 'Đáp án A. Tâm động (centromere) là vị trí gắn thoi phân bào.'
-  },
-  {
-    id: 36, type: 'mc', section: 'I',
-    text: 'Trong các mức cấu trúc siêu hiển vi của NST, mức nào sau đây có đường kính 30 nm?',
-    options: ['A. Sợi siêu xoắn.', 'B. Sợi nhiễm sắc.', 'C. Sợi cơ bản.', 'D. Chromatid.'],
-    answer: 1,
-    explain: 'Đáp án B. Sợi nhiễm sắc (solenoid) có đường kính 30 nm.'
-  },
-
-  // ========== PHẦN II: ĐÚNG / SAI ==========
-  {
-    id: 101, type: 'tf', section: 'II',
-    text: 'Quan sát Hình 22. Một số dạng đột biến cấu trúc NST, mỗi nhận định sau Đúng hay Sai?',
-    statements: [
-      { text: 'a) Hình a mô tả dạng đột biến mất đoạn NST.', answer: true },
-      { text: 'b) Thể đột biến ở dạng b có thể tăng cường hoặc giảm bớt sự biểu hiện của tính trạng.', answer: true },
-      { text: 'c) Dạng đột biến ở hình c ít có giá trị trong tiến hóa vì chỉ thay đổi trật tự sắp xếp các gene trên NST.', answer: false },
-      { text: 'd) Dạng a không có ý nghĩa trong tiến hóa do thường gây chết cho thể đột biến.', answer: false }
-    ],
-    explain: 'a Đúng (mất đoạn). b Đúng (đảo đoạn / lặp đoạn có thể ảnh hưởng biểu hiện). c Sai (đảo đoạn có giá trị tiến hóa). d Sai (mất đoạn nhỏ có thể có ý nghĩa).'
-  },
-  {
-    id: 102, type: 'tf', section: 'II',
-    text: 'Khi nói về nguyên nhân và cơ chế phát sinh đột biến gene, các kết luận dưới đây là đúng hay sai?',
-    statements: [
-      { text: 'a) Đột biến gene xảy ra có thể do tác động lí, hóa, sinh hoặc do sự rối loạn trao đổi chất xảy ra trong tế bào.', answer: true },
-      { text: 'b) Base hiếm có vị trí liên kết hydrogen bị thay đổi làm phát sinh đột biến mất cặp nucleotide trong quá trình nhân đôi DNA.', answer: false },
-      { text: 'c) Hóa chất 5BU là chất gây thay thế cặp A-T bằng cặp G-C.', answer: true },
-      { text: 'd) Tia phóng xạ có khả năng gây ion hóa các phân tử vật chất nên có thể gây nên đột biến thay thế nucleotide.', answer: true }
-    ],
-    explain: 'a Đúng. b Sai (base hiếm gây thay thế cặp, không phải mất cặp). c Đúng. d Đúng.'
-  },
-  {
-    id: 103, type: 'tf', section: 'II',
-    text: 'Hình sau đây mô tả cơ chế xảy ra đột biến của DNA gốc/gene. Mỗi nhận định sau đây là Đúng hay Sai về hình này?',
-    statements: [
-      { text: 'a) Gene H5 là gene không bị đột biến.', answer: true },
-      { text: 'b) Gene H5 có mạch x7 chính là mạch x2 của gene H1.', answer: true },
-      { text: 'c) Do base hiếm (G*) nên qua 3 lần nhân đôi mới phát sinh 1 gene đột biến thay thế G-C bằng A-T.', answer: false },
-      { text: 'd) Từ 2 gene ban đầu có G* qua 4 lần nhân đôi sẽ phát sinh 32 gene, trong đó 14 gene đột biến vị trí nucleotide được thay đổi là G-C thành A-T.', answer: false }
-    ],
-    explain: 'a, b Đúng theo hình. c Sai (thường qua 2 lần nhân đôi đã xuất hiện gene đột biến). d Sai về số lượng.'
-  },
-  {
-    id: 104, type: 'tf', section: 'II',
-    text: 'Khi nghiên cứu DNA của 4 chủng vi khuẩn thu được bảng số lượng base. Các nhận xét dưới đây là đúng hay sai?',
-    statements: [
-      { text: 'a) Tổng số nucleotide của chủng I nhiều hơn chủng II.', answer: false },
-      { text: 'b) Chủng I và chủng IV có chiều dài phân tử bằng nhau.', answer: true },
-      { text: 'c) Phân tử DNA của Chủng II có số liên kết hidrogen ít hơn phân tử DNA của chủng IV.', answer: true },
-      { text: 'd) Phân tử DNA của chủng IV có nhiệt độ nóng chảy cao nhất.', answer: false }
-    ],
-    explain: 'a Sai (I và II đều 3000 nt). b Đúng (I: 3000, IV: 3000). c Đúng (II có nhiều A-T hơn → ít liên kết H hơn). d Sai (chủng I có nhiều G-C nhất → nhiệt nóng chảy cao nhất).'
-  },
-  {
-    id: 105, type: 'tf', section: 'II',
-    text: 'Gene D ở sinh vật nhân sơ có 1500 cặp nucleotide và số nucleotide loại A chiếm 15% tổng số nucleotide của gene. Trên mạch 1 của gene có 150 nucleotide loại T và có 450 nucleotide G. Các kết luận dưới đây là đúng hay sai?',
-    statements: [
-      { text: 'a) Trên mạch 1 của gene D có A = 75.', answer: true },
-      { text: 'b) Số liên kết hydrogene của gene D là 3450.', answer: true },
-      { text: 'c) Trên mạch 2 của gene D có T = 2A.', answer: true },
-      { text: 'd) Gene D có chiều dài 5100 Å.', answer: true }
-    ],
-    explain: 'Tất cả đều đúng theo tính toán: N=3000, A=T=450, G=C=1050. Mạch 1: T1=150 → A2=150; G1=450 → C2=450; A1=75 → T2=75; C1=75 → G2=75. Liên kết H = 2×450 + 3×1050 = 4050? Có thể số liệu đề cần kiểm tra, nhưng theo đáp án đề ghi đúng.'
-  },
-  {
-    id: 106, type: 'tf', section: 'II',
-    text: 'Hình dưới đây mô tả một giai đoạn của quá trình phiên mã xảy ra trong vùng mã hóa của một gene ở sinh vật nhân sơ. Mỗi nhận định dưới đây là Đúng hay Sai?',
-    statements: [
-      { text: 'a) Vị trí (c) tương ứng với đầu 5′ của mạch làm khuôn.', answer: true },
-      { text: 'b) Quá trình phiên mã của gene này diễn ra trên cả hai mạch.', answer: false },
-      { text: 'c) Trình tự các nucleotide trên đoạn mRNA tính từ bộ ba mở đầu (1-2-3) đến vị trí (g) gồm 7 codon.', answer: true },
-      { text: 'd) Nếu nucleotide trên hình là U thì phân tử mRNA này khi làm khuôn dịch mã sẽ tạo ra chuỗi polypeptide có 4 amino acid (không kể amino acid mở đầu).', answer: false }
-    ],
-    explain: 'a Đúng. b Sai (chỉ 1 mạch khuôn). c Đúng theo hình. d Sai (số codon và stop codon cần tính chính xác).'
-  }
-];
-
-let state = {}; // id -> { answered, correct, userAnswer }
-let currentFilter = 'all';
-
-function init() {
-  questions.forEach(q => {
-    state[q.id] = { answered: false, correct: false, userAnswer: null };
-  });
-  render();
-  updateStats();
-}
-
-function render() {
-  const area = document.getElementById('quizArea');
-  area.innerHTML = '';
-  let lastSection = '';
-  questions.forEach(q => {
-    if (!shouldShow(q)) return;
-    if (q.section !== lastSection) {
-      const st = document.createElement('div');
-      st.className = 'section-title';
-      st.textContent = q.section === 'I' ? 'PHẦN I – Trắc nghiệm nhiều phương án lựa chọn' : 'PHẦN II – Trắc nghiệm đúng / sai';
-      area.appendChild(st);
-      lastSection = q.section;
-    }
-    area.appendChild(createCard(q));
-  });
-}
-
-function shouldShow(q) {
-  const s = state[q.id];
-  if (currentFilter === 'all') return true;
-  if (currentFilter === 'mc') return q.type === 'mc';
-  if (currentFilter === 'tf') return q.type === 'tf';
-  if (currentFilter === 'unanswered') return !s.answered;
-  if (currentFilter === 'wrong') return s.answered && !s.correct;
-  return true;
-}
-
-function createCard(q) {
-  const s = state[q.id];
-  const card = document.createElement('div');
-  card.className = 'card' + (s.answered ? (s.correct ? ' answered-correct' : ' answered-wrong') : '');
-  card.id = 'q' + q.id;
-
-  let html = `<div class="q-header"><span class="q-num">Câu ${q.id > 100 ? q.id - 100 : q.id}</span><div class="q-text">${q.text}</div></div>`;
-
-  if (q.type === 'mc') {
-    html += '<div class="options">';
-    q.options.forEach((opt, i) => {
-      let cls = 'opt';
-      if (s.answered) {
-        cls += ' disabled';
-        if (i === q.answer) cls += ' correct';
-        else if (s.userAnswer === i) cls += ' wrong';
-      } else if (s.userAnswer === i) cls += ' selected';
-      html += `<label class="${cls}" onclick="selectMC(${q.id},${i})">
-        <input type="radio" name="q${q.id}" ${s.userAnswer===i?'checked':''} ${s.answered?'disabled':''}>
-        <span>${opt}</span>
-      </label>`;
-    });
-    html += '</div>';
-    if (!s.answered) {
-      html += `<div style="margin-top:.8rem"><button class="btn btn-primary" style="width:100%" onclick="checkMC(${q.id})">Kiểm tra</button></div>`;
-    }
-  } else {
-    // True/False
-    html += '<div class="tf-row">';
-    q.statements.forEach((st, i) => {
-      const ua = s.userAnswer ? s.userAnswer[i] : null;
-      html += `<div class="tf-item">
-        <div class="tf-label">${st.text}</div>
-        <div class="tf-btns">
-          <button class="btn-tf ${ua===true?'active-dung':''}" ${s.answered?'disabled':''} onclick="selectTF(${q.id},${i},true)">Đúng</button>
-          <button class="btn-tf ${ua===false?'active-sai':''}" ${s.answered?'disabled':''} onclick="selectTF(${q.id},${i},false)">Sai</button>
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 py-4 px-6 shadow-md sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-xl font-bold text-emerald-400">ĐỀ CƯƠNG ÔN TẬP GIỮA KÌ I - SINH HỌC 12</h1>
+                <p class="text-xs text-slate-400">Trường TH, THCS và THPT Lê Thánh Tông — GV Nguyễn Thảo Uyên</p>
+            </div>
+            <div id="score-board" class="hidden flex items-center gap-4 bg-slate-700 px-4 py-2 rounded-lg text-sm font-medium">
+                <div>Đúng: <span id="correct-count" class="text-emerald-400 font-bold">0</span></div>
+                <div>Sai: <span id="incorrect-count" class="text-rose-400 font-bold">0</span></div>
+                <div>Tiến độ: <span id="progress-count" class="text-emerald-400 font-bold">0/0</span></div>
+            </div>
         </div>
-      </div>`;
-    });
-    html += '</div>';
-    if (!s.answered) {
-      html += `<div style="margin-top:.8rem"><button class="btn btn-primary" style="width:100%" onclick="checkTF(${q.id})">Kiểm tra</button></div>`;
-    }
-  }
+    </header>
 
-  // Answer box
-  if (s.answered) {
-    const ansCls = s.correct ? 'correct-ans' : 'wrong-ans';
-    let ansText = s.correct ? '✅ Chính xác! ' : '❌ Chưa đúng. ';
-    if (q.type === 'mc') {
-      ansText += `Đáp án đúng: <strong>${q.options[q.answer]}</strong><br>${q.explain || ''}`;
-    } else {
-      ansText += q.explain || '';
-      ansText += '<br>Chi tiết: ';
-      q.statements.forEach((st, i) => {
-        const ok = s.userAnswer[i] === st.answer;
-        ansText += `<br>${ok ? '✓' : '✗'} ${st.text} → <strong>${st.answer ? 'Đúng' : 'Sai'}</strong>`;
-      });
-    }
-    html += `<div class="answer-box show ${ansCls}">${ansText}</div>`;
-  }
+    <!-- Main Container -->
+    <main class="flex-grow max-w-3xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center">
 
-  card.innerHTML = html;
-  return card;
-}
+        <!-- Welcome View -->
+        <div id="welcome-view" class="bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-xl text-center">
+            <div class="w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold border border-emerald-500/20">🧬</div>
+            <h2 class="text-2xl font-bold mb-2">Đề Cương Trắc Nghiệm Sinh Học 12</h2>
+            <p class="text-slate-400 mb-6 max-w-lg mx-auto text-sm sm:text-base">
+                Hệ thống tích hợp đầy đủ <b>Phần I (36 câu Trắc nghiệm MCQ)</b>, <b>Phần II (6 câu Đúng/Sai)</b> và <b>Phần III (10 câu Trả lời ngắn / Tính toán / Sơ đồ)</b>. Đã bỏ phần tự luận.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto">
+                <button onclick="startQuiz('all')" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold p-4 rounded-xl transition shadow-lg shadow-emerald-500/20 cursor-pointer">
+                    🚀 Làm Toàn Bộ Đề Thi
+                </button>
+                <button onclick="startQuiz('p1')" class="bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold p-4 rounded-xl transition border border-slate-600 cursor-pointer">
+                    📝 Chỉ Làm Phần I (MCQ)
+                </button>
+            </div>
+        </div>
 
-function selectMC(id, idx) {
-  if (state[id].answered) return;
-  state[id].userAnswer = idx;
-  render();
-}
+        <!-- Quiz View -->
+        <div id="quiz-view" class="hidden flex flex-col gap-6">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <span id="question-tag" class="text-xs font-semibold px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20"></span>
+                    <span id="question-progress" class="text-xs text-slate-400 font-medium"></span>
+                </div>
 
-function checkMC(id) {
-  const q = questions.find(x => x.id === id);
-  const s = state[id];
-  if (s.userAnswer === null || s.userAnswer === undefined) {
-    alert('Hãy chọn một đáp án trước!');
-    return;
-  }
-  s.answered = true;
-  s.correct = s.userAnswer === q.answer;
-  render();
-  updateStats();
-  checkAllDone();
-}
+                <!-- Sơ đồ / Hình vẽ minh họa -->
+                <div id="image-container" class="hidden mb-6 p-4 bg-slate-900 border border-slate-700 rounded-xl flex justify-center items-center overflow-x-auto"></div>
 
-function selectTF(id, stIdx, val) {
-  if (state[id].answered) return;
-  if (!state[id].userAnswer) state[id].userAnswer = Array(questions.find(x=>x.id===id).statements.length).fill(null);
-  state[id].userAnswer[stIdx] = val;
-  render();
-}
+                <div id="question-text" class="text-lg sm:text-xl font-medium text-slate-100 mb-6 leading-relaxed"></div>
 
-function checkTF(id) {
-  const q = questions.find(x => x.id === id);
-  const s = state[id];
-  if (!s.userAnswer || s.userAnswer.some(x => x === null)) {
-    alert('Hãy chọn Đúng/Sai cho tất cả các ý!');
-    return;
-  }
-  s.answered = true;
-  s.correct = s.userAnswer.every((ua, i) => ua === q.statements[i].answer);
-  render();
-  updateStats();
-  checkAllDone();
-}
+                <!-- 1. Container MCQ -->
+                <div id="options-container" class="flex flex-col gap-3"></div>
 
-function updateStats() {
-  let correct = 0, wrong = 0, total = questions.length;
-  questions.forEach(q => {
-    if (state[q.id].answered) {
-      if (state[q.id].correct) correct++;
-      else wrong++;
-    }
-  });
-  const done = correct + wrong;
-  document.getElementById('sCorrect').textContent = correct;
-  document.getElementById('sWrong').textContent = wrong;
-  document.getElementById('sRemain').textContent = total - done;
-  const pct = done ? Math.round(correct / done * 100) : 0;
-  document.getElementById('sPercent').textContent = pct + '%';
-  document.getElementById('progressBar').style.width = (done / total * 100) + '%';
-}
+                <!-- 2. Container True/False -->
+                <div id="tf-container" class="hidden flex flex-col gap-4"></div>
 
-function checkAllDone() {
-  const allDone = questions.every(q => state[q.id].answered);
-  if (allDone) {
-    const correct = questions.filter(q => state[q.id].correct).length;
-    const pct = Math.round(correct / questions.length * 100);
-    const scoreEl = document.getElementById('finalScore');
-    scoreEl.textContent = pct + '%';
-    scoreEl.className = 'score-big ' + (pct >= 80 ? 'good' : pct >= 50 ? 'mid' : 'bad');
-    document.getElementById('finalText').textContent = `Bạn đúng ${correct}/${questions.length} câu.`;
-    document.getElementById('resultPanel').classList.add('show');
-    document.getElementById('resultPanel').scrollIntoView({ behavior: 'smooth' });
-  }
-}
+                <!-- 3. Container Short Answer -->
+                <div id="input-container" class="hidden flex flex-col gap-4">
+                    <div class="flex gap-3">
+                        <input type="text" id="user-short-input" placeholder="Nhập đáp án (ví dụ: 72, 25, 899, 1432)..." class="flex-grow bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-emerald-500">
+                        <button onclick="submitShortAnswer()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold px-6 py-3 rounded-xl transition cursor-pointer shrink-0">Gửi đáp án</button>
+                    </div>
+                </div>
 
-function filterQ(btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  currentFilter = btn.dataset.filter;
-  render();
-}
+                <!-- Feedback / Explanation Box -->
+                <div id="feedback-box" class="hidden mt-6 p-4 rounded-xl border transition-all">
+                    <div id="feedback-title" class="font-semibold text-sm mb-1"></div>
+                    <div id="feedback-content" class="text-sm text-slate-300 leading-relaxed"></div>
+                </div>
+            </div>
 
-function resetAll() {
-  if (!confirm('Bạn muốn làm lại tất cả câu hỏi từ đầu?')) return;
-  questions.forEach(q => {
-    state[q.id] = { answered: false, correct: false, userAnswer: null };
-  });
-  document.getElementById('resultPanel').classList.remove('show');
-  currentFilter = 'all';
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
-  render();
-  updateStats();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+            <!-- Navigation Bar -->
+            <div class="flex justify-between items-center">
+                <button onclick="prevQuestion()" id="prev-btn" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-5 py-2.5 rounded-xl font-medium transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+                    ← Câu trước
+                </button>
+                <button onclick="backHome()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 px-4 py-2.5 rounded-xl text-sm font-medium transition cursor-pointer">
+                    🏠 Trang chủ
+                </button>
+                <button onclick="nextQuestion()" id="next-btn" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold px-6 py-2.5 rounded-xl transition cursor-pointer">
+                    Câu tiếp theo →
+                </button>
+            </div>
+        </div>
 
-function showWrongOnly() {
-  currentFilter = 'wrong';
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector('.filter-btn[data-filter="wrong"]').classList.add('active');
-  render();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+        <!-- Result View -->
+        <div id="result-view" class="hidden bg-slate-800 border border-slate-700 rounded-2xl p-8 shadow-xl text-center">
+            <div class="w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold border border-emerald-500/20">🏆</div>
+            <h2 class="text-2xl font-bold mb-2">Hoàn Thành Bài Luyện Tập!</h2>
+            <p class="text-slate-400 mb-6">Bạn đã đi qua toàn bộ câu hỏi trong đề cương Sinh học 12.</p>
+            <div class="flex justify-center gap-6 mb-8">
+                <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl w-32">
+                    <div class="text-2xl font-bold text-emerald-400" id="final-correct">0</div>
+                    <div class="text-xs text-slate-400 mt-1">Số câu đúng</div>
+                </div>
+                <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl w-32">
+                    <div class="text-2xl font-bold text-rose-400" id="final-incorrect">0</div>
+                    <div class="text-xs text-slate-400 mt-1">Số câu sai</div>
+                </div>
+            </div>
+            <button onclick="resetApp()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold px-6 py-3 rounded-xl transition cursor-pointer shadow-lg shadow-emerald-500/20">
+                Làm lại bài thi
+            </button>
+        </div>
 
-init();
-</script>
+    </main>
+
+    <footer class="py-4 text-center text-xs text-slate-500 border-t border-slate-800 mt-auto">
+        Đề Cương Ôn Tập Sinh Học 12 - Trường TH, THCS và THPT Lê Thánh Tông
+    </footer>
+
+    <script>
+        const questionsData = [
+            // ==================== PHẦN I: TRẮC NGHIỆM NHIỀU LỰA CHỌN (36 CÂU) ====================
+            {
+                id: 1, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Hình bên dưới là loại đơn phân nào của nucleic acid?",
+                svg: `<svg width="220" height="120" viewBox="0 0 220 120" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="40" cy="30" r="16" fill="none" stroke="#38bdf8" stroke-width="2"/>
+                    <text x="40" y="35" text-anchor="middle" fill="#38bdf8" font-size="12" font-weight="bold">P</text>
+                    <polygon points="90,30 115,50 105,80 75,80 65,50" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+                    <text x="90" y="60" text-anchor="middle" fill="#e2e8f0" font-size="11">Đường</text>
+                    <rect x="140" y="20" width="50" height="30" rx="4" fill="none" stroke="#f43f5e" stroke-width="2"/>
+                    <text x="165" y="40" text-anchor="middle" fill="#f43f5e" font-size="14" font-weight="bold">A</text>
+                    <line x1="56" y1="30" x2="68" y2="42" stroke="#94a3b8" stroke-width="2"/>
+                    <line x1="112" y1="40" x2="140" y2="35" stroke="#94a3b8" stroke-width="2"/>
+                </svg>`,
+                options: [
+                    { text: "A. Nucleotide cytosine (C)", isCorrect: false },
+                    { text: "B. Nucleotide guanine (G)", isCorrect: false },
+                    { text: "C. Nucleotide adenine (A)", isCorrect: true },
+                    { text: "D. Nucleotide thymine (T)", isCorrect: false }
+                ],
+                rationale: "Đơn phân có base nitrogen loại Adenine (A) là Nucleotide adenine (A)[cite: 4]."
+            },
+            {
+                id: 2, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Mã di truyền là gì?",
+                options: [
+                    { text: "A. Mã bộ ba được đọc liên tục trên mRNA theo chiều 3' -> 5'.", isCorrect: false },
+                    { text: "B. Mã bộ ba trên DNA.", isCorrect: false },
+                    { text: "C. Mã bộ ba trên DNA được đọc liên tục.", isCorrect: false },
+                    { text: "D. Mã bộ ba được đọc liên tục trên mRNA theo chiều 5' -> 3'.", isCorrect: true }
+                ],
+                rationale: "Mã di truyền là mã bộ ba được đọc liên tục không gối lên nhau trên mRNA theo chiều 5' -> 3'[cite: 4]."
+            },
+            {
+                id: 3, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Loại RNA nào đa dạng nhất?",
+                options: [
+                    { text: "A. mRNA", isCorrect: true },
+                    { text: "B. tRNA", isCorrect: false },
+                    { text: "C. rRNA", isCorrect: false },
+                    { text: "D. RNA enzyme", isCorrect: false }
+                ],
+                rationale: "mRNA (RNA thông tin) có số lượng loài đa dạng nhất vì tế bào có hàng nghìn gene mã hóa cho các chuỗi polypeptide khác nhau[cite: 4]."
+            },
+            {
+                id: 4, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Trong quá trình tái bản DNA, enzyme ligase (enzyme nối) có vai trò gì?",
+                options: [
+                    { text: "A. Nối các đoạn Okazaki với nhau.", isCorrect: true },
+                    { text: "B. Tách hai mạch đơn của phân tử DNA.", isCorrect: false },
+                    { text: "C. Tháo xoắn phân tử DNA.", isCorrect: false },
+                    { text: "D. Tổng hợp và kéo dài mạch mới.", isCorrect: false }
+                ],
+                rationale: "Enzyme ligase có chức năng nối các đoạn Okazaki lại với nhau để tạo thành mạch liên tục[cite: 4]."
+            },
+            {
+                id: 5, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Hình sau đây mô tả cơ chế di truyền trong tế bào (chạc tái bản DNA). Nhận định nào sau đây là ĐÚNG?",
+                svg: `<svg width="280" height="130" viewBox="0 0 280 130" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M 20,20 L 100,20 L 260,55" fill="none" stroke="#38bdf8" stroke-width="2"/>
+                    <path d="M 20,110 L 100,110 L 260,75" fill="none" stroke="#38bdf8" stroke-width="2"/>
+                    <path d="M 100,30 L 250,62" fill="none" stroke="#f43f5e" stroke-width="2" stroke-dasharray="4,4"/>
+                    <path d="M 100,100 L 140,92 M 150,90 L 190,82 M 200,80 L 240,72" fill="none" stroke="#f43f5e" stroke-width="2"/>
+                    <text x="15" y="25" fill="#e2e8f0" font-size="12">1</text>
+                    <text x="265" y="58" fill="#e2e8f0" font-size="12">2</text>
+                    <text x="15" y="115" fill="#e2e8f0" font-size="12">3</text>
+                    <text x="265" y="80" fill="#e2e8f0" font-size="12">4</text>
+                    <text x="160" y="25" fill="#f43f5e" font-size="11">a</text>
+                    <text x="160" y="115" fill="#f43f5e" font-size="11">b</text>
+                </svg>`,
+                options: [
+                    { text: "A. Chiều 1 -> 2 là 3' -> 5'.", isCorrect: false },
+                    { text: "B. Chiều của [b] là 3' -> 5'.", isCorrect: false },
+                    { text: "C. Chiều 3 -> 4 là 3' -> 5'.", isCorrect: true },
+                    { text: "D. Quá trình này đã làm 6 đoạn mồi được tạo ra nhờ enzyme mRNA polymerase.", isCorrect: false }
+                ],
+                rationale: "Mạch khuôn 3 -> 4 có chiều 3' -> 5', do đó mạch mới [b] được tổng hợp ngắt đoạn theo chiều 5' -> 3'[cite: 4]."
+            },
+            {
+                id: 6, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Khi nói đến cấu trúc và cơ chế di truyền cấp phần tử, có bao nhiêu phát biểu sau đây đúng?\nI. Quá trình phiên mã có ở virus, vi khuẩn, sinh vật nhân thực.\nII. Quá trình dịch mã chỉ có sinh vật nhân thực.\nIII. Ở sinh vật nhân sơ một gene có thể quy định tổng hợp nhiều loại chuỗi polypeptide khác nhau.\nIV. Quá trình nguyên phân sự tái bản DNA diễn ra vào pha S của kỳ trung gian.",
+                options: [
+                    { text: "A. 2", isCorrect: false },
+                    { text: "B. 3", isCorrect: false },
+                    { text: "C. 4", isCorrect: false },
+                    { text: "D. 1", isCorrect: true }
+                ],
+                rationale: "Chỉ có ý IV đúng. Ý I sai vì virus không tự phiên mã; Ý II sai vì sinh vật nhân sơ cũng có dịch mã; Ý III sai vì gene phân mảnh ở nhân thực mới tạo nhiều polypeptide[cite: 4]."
+            },
+            {
+                id: 7, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Trong cơ chế điều hòa hoạt động gene của operon Lac ở vi khuẩn E. coli, gene điều hòa có vai trò gì?",
+                options: [
+                    { text: "A. Quy định tổng hợp protein chế.", isCorrect: true },
+                    { text: "B. Khởi đầu quá trình phiên mã của các gene cấu trúc.", isCorrect: false },
+                    { text: "C. Quy định tổng hợp enzyme phân giải lactose.", isCorrect: false },
+                    { text: "D. Kết thúc quá trình phiên mã của các gene cấu trúc.", isCorrect: false }
+                ],
+                rationale: "Gene điều hòa (R) tổng hợp protein ức chế để bám vào vùng vận hành (O) làm ngăn cản phiên mã[cite: 4]."
+            },
+            {
+                id: 8, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Có bao nhiêu phát biểu sau đây đúng về hoạt động gene / điều hòa hoạt động gene ở sinh vật?\nI. Điều hòa hoạt động của gene sau phiên mã bản chất là điều khiển sự trưởng thành và thời gian tồn tại của mRNA.\nII. Ở sinh vật nhân thực, hai gene khác nhau (không bị đột biến) có thể tổng hợp nên các phân tử protein giống nhau.\nIII. Ở sinh vật nhân thực, khi gene bị đột biến thì sản phẩm protein của nó phải khác với sản phẩm protein của gene bình thường.\nIV. Hoạt động của gene chịu sự kiểm soát chủ yếu của gene điều hòa.",
+                options: [
+                    { text: "A. 1", isCorrect: false },
+                    { text: "B. 2", isCorrect: true },
+                    { text: "C. 3", isCorrect: false },
+                    { text: "D. 4", isCorrect: false }
+                ],
+                rationale: "Các phát biểu I và IV đúng (Tổng cộng 2 phát biểu đúng)[cite: 4]."
+            },
+            {
+                id: 9, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Một base nitrogen của gene trở thành dạng hiếm thì quá trình tái bản DNA sẽ phát sinh dạng đột biến gì?",
+                options: [
+                    { text: "A. Mất đoạn nhiễm sắc thể.", isCorrect: false },
+                    { text: "B. Thêm một cặp nucleotide.", isCorrect: false },
+                    { text: "C. Thay thế một cặp nucleotide.", isCorrect: true },
+                    { text: "D. Mất một cặp nucleotide.", isCorrect: false }
+                ],
+                rationale: "Base hiếm (như G*) kết cặp không chuẩn trong nhân đôi DNA dẫn đến đột biến thay thế cặp nucleotide (G-C -> A-T)[cite: 4, 6]."
+            },
+            {
+                id: 10, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Loại đột biến nào sau đây làm cho gene đột biến tăng 2 liên kết hydrogen so với gene ban đầu?",
+                options: [
+                    { text: "A. Đột biến mất 1 cặp A-T.", isCorrect: false },
+                    { text: "B. Đột biến thêm 1 cặp A-T.", isCorrect: true },
+                    { text: "C. Đột biến thay thế 2 cặp G-C bằng 2 cặp A-T.", isCorrect: false },
+                    { text: "D. Đột biến thay thế 1 cặp A-T bằng 1 cặp G-C.", isCorrect: false }
+                ],
+                rationale: "Cặp A-T có 2 liên kết hydrogen, nên khi thêm 1 cặp A-T sẽ làm tăng thêm đúng 2 liên kết hydrogen[cite: 4]."
+            },
+            {
+                id: 11, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Phát biểu nào sau đây là đúng khi nói về đột biến gene?",
+                options: [
+                    { text: "A. Đột biến xảy ra ở tế bào soma (đột biến soma) luôn biểu hiện ra cơ thể.", isCorrect: false },
+                    { text: "B. Đột biến gene xảy ra trong những lần nguyên phân đầu tiên của hợp tử luôn biểu hiện ra kiểu hình cơ thể.", isCorrect: false },
+                    { text: "C. Đột biến xảy ra trong giảm phân hình thành giao tử không biểu hiện ra kiểu hình ở thế hệ sau.", isCorrect: false },
+                    { text: "D. Đột biến soma có thể truyền bằng sinh sản sinh dưỡng.", isCorrect: true }
+                ],
+                rationale: "Đột biến soma di truyền cho thế hệ sau qua hình thức sinh sản sinh dưỡng (vô tính)[cite: 4]."
+            },
+            {
+                id: 12, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Hóa chất gây đột biến 5-BU thường gây đột biến gene dạng nào?",
+                options: [
+                    { text: "A. Thay thế cặp G-C bằng cặp T-A.", isCorrect: false },
+                    { text: "B. Thay thế cặp C-G bằng cặp C-G.", isCorrect: false },
+                    { text: "C. Thay thế cặp A-T bằng cặp T-A.", isCorrect: false },
+                    { text: "D. Thay thế cặp A-T bằng cặp G-C.", isCorrect: true }
+                ],
+                rationale: "Chất 5-BU là chất đồng đẳng của Thymine, gây đột biến thay thế cặp A-T bằng cặp G-C[cite: 4, 6]."
+            },
+            {
+                id: 13, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Trong các dạng đột biến sau, có bao nhiêu dạng đột biến không làm thay đổi tỉ lệ (A+G)/(T+C) của gene?\nI. Thay thế một cặp A-T bằng cặp G-C\nII. Thay thế một cặp A-T bằng một cặp T-A\nIII. Thêm một cặp nucleotide\nIV. Mất một cặp nucleotide",
+                options: [
+                    { text: "A. 3", isCorrect: false },
+                    { text: "B. 4", isCorrect: true },
+                    { text: "C. 1", isCorrect: false },
+                    { text: "D. 2", isCorrect: false }
+                ],
+                rationale: "Đối với DNA mạch kép, luôn có A=T và G=C nên tỉ lệ (A+G)/(T+C) luôn bằng 1 trong mọi dạng đột biến điểm[cite: 2, 4]."
+            },
+            {
+                id: 14, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Một gene cấu trúc dài 4080 Å, có tỉ lệ A/G = 3/2. Gene này bị đột biến thay thế một cặp A-T bằng một cặp G-C. Số lượng nucleotide từng loại của gene sau đột biến là bao nhiêu?",
+                options: [
+                    { text: "A. A = T = 720; G = C = 480.", isCorrect: false },
+                    { text: "B. A = T = 719; G = C = 481.", isCorrect: true },
+                    { text: "C. A = T = 721; G = C = 479.", isCorrect: false },
+                    { text: "D. A = T = 481; G = C = 719.", isCorrect: false }
+                ],
+                rationale: "N = (4080/3.4)*2 = 2400. A+G = 1200; A/G = 3/2 => A=720, G=480. Đột biến thay A-T bằng G-C => A=T=719, G=C=481[cite: 4]."
+            },
+            {
+                id: 15, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Trình tự nucleotide trong DNA có tác dụng bảo vệ và làm các NST không dính vào nhau nằm ở đâu?",
+                options: [
+                    { text: "A. Tâm động.", isCorrect: false },
+                    { text: "B. Hai đầu mút NST.", isCorrect: true },
+                    { text: "C. Eo thứ cấp.", isCorrect: false },
+                    { text: "D. Điểm khởi sự nhân đôi.", isCorrect: false }
+                ],
+                rationale: "Vùng đầu mút của NST có chức năng bảo vệ NST và giữ cho các NST không dính vào nhau[cite: 4, 5, 7]."
+            },
+            {
+                id: 16, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Mức cấu trúc xoắn nào của nhiễm sắc thể có đường kính 10 nm?",
+                options: [
+                    { text: "A. Sợi DNA", isCorrect: false },
+                    { text: "B. Sợi cơ bản", isCorrect: true },
+                    { text: "C. Sợi nhiễm sắc", isCorrect: false },
+                    { text: "D. Cấu trúc siêu xoắn", isCorrect: false }
+                ],
+                rationale: "Sợi cơ bản (chuỗi nucleosome) có đường kính 10 nm (hoặc 11 nm)[cite: 4, 5]."
+            },
+            {
+                id: 17, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Xét vùng tương đồng của X và Y. Trên NST giới tính X mang các gene ABC, thì NST Y mang gene như thế nào?",
+                options: [
+                    { text: "A. MNO", isCorrect: false },
+                    { text: "B. ABC", isCorrect: true },
+                    { text: "C. abc", isCorrect: false },
+                    { text: "D. AHCDE", isCorrect: false }
+                ],
+                rationale: "Ở vùng tương đồng giữa NST X và Y, các lô-cút gene trên X cũng có các lô-cút tương ứng trên Y (ABC)[cite: 5]."
+            },
+            {
+                id: 18, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Cho các NST mang các gene sau đây:\nI. NST 1: AB.DE\nII. NST 2: ab.De\nIII. NST 3: MNO.PQ\nIV. NST 4: MNO.PQ\nPhát biểu nào sau đây đúng?",
+                options: [
+                    { text: "A. I và II là cặp tương đồng.", isCorrect: true },
+                    { text: "B. I và III là cặp tương đồng.", isCorrect: false },
+                    { text: "C. I và IV là cặp tương đồng.", isCorrect: false },
+                    { text: "D. II và IV là cặp tương đồng.", isCorrect: false }
+                ],
+                rationale: "NST 1 và 2 mang các cặp allele tương ứng (A/a, B/b, D/D, E/e) nên là cặp NST tương đồng[cite: 5]."
+            },
+            {
+                id: 19, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Tỉ lệ các loại giao tử ABD tạo ra từ kiểu gene AaBbDd là:",
+                options: [
+                    { text: "A. 25%", isCorrect: false },
+                    { text: "B. 50%", isCorrect: false },
+                    { text: "C. 12,5%", isCorrect: true },
+                    { text: "D. 100%", isCorrect: false }
+                ],
+                rationale: "Cơ thể AaBbDd tạo 2^3 = 8 loại giao tử bằng nhau. Tỉ lệ giao tử ABD = 1/2 * 1/2 * 1/2 = 1/8 = 12,5%[cite: 5]."
+            },
+            {
+                id: 20, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Hai nhà khoa học nào đã phát hiện ra cơ chế điều hòa operon Lac?",
+                options: [
+                    { text: "A. Mendel và Morgan", isCorrect: false },
+                    { text: "B. Jacob và Monod", isCorrect: true },
+                    { text: "C. Lamarck và Darwin", isCorrect: false },
+                    { text: "D. Hardy và Weinberg", isCorrect: false }
+                ],
+                rationale: "Jacob và Monod là hai nhà khoa học Pháp phát hiện ra cơ chế điều hòa operon Lac ở E. coli năm 1961[cite: 5]."
+            },
+            {
+                id: 21, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Xét phép lập P: AaBbDd x AaBbDd. Thế hệ F1 thu được kiểu gene AaBbDd với tỉ lệ:",
+                options: [
+                    { text: "A. 1/16", isCorrect: false },
+                    { text: "B. 1/4", isCorrect: false },
+                    { text: "C. 1/8", isCorrect: true },
+                    { text: "D. 1/64", isCorrect: false }
+                ],
+                rationale: "Mỗi cặp Aa x Aa -> 1/2 Aa. Do đó F1 kiểu gene AaBbDd = 1/2 * 1/2 * 1/2 = 1/8[cite: 5]."
+            },
+            {
+                id: 22, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Ở người, mắc Hội chứng Klinefelter có kiểu nhiễm sắc thể giới tính là:",
+                options: [
+                    { text: "A. XYY", isCorrect: false },
+                    { text: "B. XXY", isCorrect: true },
+                    { text: "C. XO", isCorrect: false },
+                    { text: "D. XXX", isCorrect: false }
+                ],
+                rationale: "Hội chứng Klinefelter do thừa 1 NST giới tính X ở nam giới, kiểu NST là 47, XXY[cite: 5]."
+            },
+            {
+                id: 23, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Yếu tố quyết định tính đặc thù chức năng của protein là:",
+                options: [
+                    { text: "A. Số lượng amino acid.", isCorrect: false },
+                    { text: "B. Trình tự sắp xếp các amino acid.", isCorrect: true },
+                    { text: "C. Môi trường tế bào.", isCorrect: false },
+                    { text: "D. Nhiệt độ.", isCorrect: false }
+                ],
+                rationale: "Thành phần, số lượng và đặc biệt là trình tự sắp xếp các amino acid quy định cấu trúc không gian và chức năng đặc thù của protein[cite: 5]."
+            },
+            {
+                id: 24, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Sản phẩm của gene là gì?",
+                options: [
+                    { text: "A. Phân tử protein hay mRNA.", isCorrect: false },
+                    { text: "B. Phân tử RNA hay chuỗi polypeptide.", isCorrect: true },
+                    { text: "C. Polypeptide hay phân tử mRNA, tRNA.", isCorrect: false },
+                    { text: "D. Phân tử protein hay phân tử tRNA, rRNA.", isCorrect: false }
+                ],
+                rationale: "Sản phẩm của gene mã hóa có thể là RNA (mRNA, tRNA, rRNA) hoặc chuỗi polypeptide (protein)[cite: 5]."
+            },
+            {
+                id: 25, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Quá trình tái bản DNA có bao nhiêu đặc điểm sau đây?\nI. Diễn ra ở kỳ trung gian của quá trình phân bào.\nII. Diễn ra theo nguyên tắc bổ sung và nguyên tắc bán bảo tồn.\nIII. Chỉ có một mạch đơn được dùng làm khuôn để tổng hợp mạch mới.\nIV. Đoạn Okazaki được tổng hợp theo chiều 3' -> 5'.\nV. Nếu không có sai sót thì qua một lần nhân đôi tạo ra hai DNA con có cấu trúc giống DNA mẹ.",
+                options: [
+                    { text: "A. 2", isCorrect: false },
+                    { text: "B. 3", isCorrect: true },
+                    { text: "C. 4", isCorrect: false },
+                    { text: "D. 5", isCorrect: false }
+                ],
+                rationale: "Các đặc điểm đúng gồm I, II, V (Tổng cộng 3 ý đúng). Ý III sai vì cả 2 mạch làm khuôn; Ý IV sai vì mạch mới luôn tổng hợp chiều 5' -> 3'[cite: 5]."
+            },
+            {
+                id: 26, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Đâu không phải codon kết thúc dịch mã?",
+                options: [
+                    { text: "A. UAA", isCorrect: false },
+                    { text: "B. UCA", isCorrect: true },
+                    { text: "C. UAG", isCorrect: false },
+                    { text: "D. UGA", isCorrect: false }
+                ],
+                rationale: "Ba codon kết thúc dịch mã là UAA, UAG, UGA. UCA không phải là codon kết thúc[cite: 5]."
+            },
+            {
+                id: 27, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Khi nói về quá trình điều hòa biểu hiện gene theo mô hình operon Lac, phát biểu nào sau đây đúng?",
+                options: [
+                    { text: "A. Trong điều kiện không có lactose, nhóm gene cấu trúc vẫn tiến hành phiên mã.", isCorrect: false },
+                    { text: "B. Gene điều hòa và nhóm gene cấu trúc có chung một cơ chế điều hòa.", isCorrect: false },
+                    { text: "C. Gene điều hòa chỉ phiên mã khi môi trường không có lactose.", isCorrect: false },
+                    { text: "D. Nhóm gene cấu trúc chỉ phiên mã khi protein ức chế không bám vào vùng vận hành O.", isCorrect: true }
+                ],
+                rationale: "Khi lactose xuất hiện, nó liên kết với protein ức chế làm biến đổi cấu hình nên không bám vào O được, giúp nhóm gene cấu trúc phiên mã[cite: 5]."
+            },
+            {
+                id: 28, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Hoạt động của gene chịu sự kiểm soát chủ yếu của gene nào?",
+                options: [
+                    { text: "A. Gene ức chế.", isCorrect: false },
+                    { text: "B. Gene điều hòa.", isCorrect: true },
+                    { text: "C. Gene sản xuất.", isCorrect: false },
+                    { text: "D. Gene khởi động.", isCorrect: false }
+                ],
+                rationale: "Gene điều hòa tổng hợp protein điều hòa kiểm soát quá trình phiên mã của các gene khác[cite: 5]."
+            },
+            {
+                id: 29, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Điều khẳng định nào dưới đây về hoạt động của operon Lac là đúng?",
+                options: [
+                    { text: "A. Khi môi trường có lactose thì phân tử đường này sẽ liên kết với RNA polymerase...", isCorrect: false },
+                    { text: "B. Khi môi trường không có lactose thì phân tử RNA polymerase không thể liên kết được với vùng vận hành.", isCorrect: false },
+                    { text: "C. Khi môi trường có lactose thì phân tử đường này sẽ liên kết với protein ức chế làm cho nó bị biến đổi cấu hình nên không thể liên kết được với vùng vận hành.", isCorrect: true },
+                    { text: "D. Khi môi trường không có lactose thì phân tử protein ức chế sẽ liên kết với RNA polymerase...", isCorrect: false }
+                ],
+                rationale: "Đường lactose đóng vai trò là chất cảm ứng liên kết làm biến đổi cấu hình không gian của protein ức chế[cite: 5]."
+            },
+            {
+                id: 30, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Khi đột biến gene đã phát sinh thì nó sẽ được nhân lên thông qua quá trình nào sau đây?",
+                options: [
+                    { text: "A. Tái bản DNA.", isCorrect: true },
+                    { text: "B. Phiên mã.", isCorrect: false },
+                    { text: "C. Dịch mã.", isCorrect: false },
+                    { text: "D. Điều hòa hoạt động gene.", isCorrect: false }
+                ],
+                rationale: "Đột biến gene được sao chép và nhân lên qua các lần nhân đôi (tái bản) DNA[cite: 5]."
+            },
+            {
+                id: 31, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Loại đột biến nào sau đây làm cho gene đột biến giảm 1 liên kết hydrogen so với gene ban đầu?",
+                options: [
+                    { text: "A. Đột biến mất 1 cặp A-T.", isCorrect: false },
+                    { text: "B. Đột biến thêm 1 cặp A-T.", isCorrect: false },
+                    { text: "C. Đột biến thay thế 2 cặp G-C bằng 2 cặp A-T.", isCorrect: false },
+                    { text: "D. Đột biến thay thế 1 cặp G-C bằng 1 cặp A-T.", isCorrect: true }
+                ],
+                rationale: "Cặp G-C có 3 liên kết H, cặp A-T có 2 liên kết H. Thay 1 G-C bằng 1 A-T làm giảm 3 - 2 = 1 liên kết H[cite: 5]."
+            },
+            {
+                id: 32, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Khi nói đến đột biến Gene, phát biểu nào sau đây đúng?",
+                options: [
+                    { text: "A. Phát sinh trong nguyên phân của tế bào mô sinh dưỡng sẽ di truyền cho đời sau qua sinh sản hữu tính.", isCorrect: false },
+                    { text: "B. Thường xuất hiện đồng loạt trên các cá thể cùng loài sống trong cùng một điều kiện sống.", isCorrect: false },
+                    { text: "C. Phát sinh trong giảm phân sẽ đi vào giao tử và di truyền được cho thế hệ sau qua sinh sản hữu tính.", isCorrect: true },
+                    { text: "D. Phát sinh trong giảm phân sẽ được nhân lên ở một mô cơ thể và biểu hiện kiểu hình ở một phần cơ thể.", isCorrect: false }
+                ],
+                rationale: "Đột biến giao tử phát sinh trong giảm phân có khả năng truyền qua sinh sản hữu tính[cite: 5]."
+            },
+            {
+                id: 33, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Guanine dạng hiếm (G*) kết cặp với Thymine (T) trong quá trình tái bản DNA, tạo nên đột biến điểm dạng:",
+                options: [
+                    { text: "A. Thêm một cặp G-C.", isCorrect: false },
+                    { text: "B. Thay thế cặp A-T bằng cặp G-C.", isCorrect: false },
+                    { text: "C. Mất một cặp A-T.", isCorrect: false },
+                    { text: "D. Thay thế cặp G-C bằng cặp A-T.", isCorrect: true }
+                ],
+                rationale: "G* bám T -> Qua nhân đôi tạo A-T, biến đổi từ cặp G-C ban đầu thành A-T[cite: 5]."
+            },
+            {
+                id: 34, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Trong trường hợp đột biến thêm 1 cặp nucleotide. Số liên kết hydrogene của gene đột biến sẽ thay đổi như thế nào so với gene ban đầu?",
+                options: [
+                    { text: "A. Số liên kết tăng 2.", isCorrect: false },
+                    { text: "B. Số liên kết tăng 3.", isCorrect: false },
+                    { text: "C. Số liên kết không thay đổi.", isCorrect: false },
+                    { text: "D. Số liên kết tăng 2 hoặc tăng 3 liên kết.", isCorrect: true }
+                ],
+                rationale: "Nếu thêm 1 cặp A-T sẽ tăng 2 liên kết H; nếu thêm 1 cặp G-C sẽ tăng 3 liên kết H[cite: 5]."
+            },
+            {
+                id: 35, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Trình tự nucleotide đặc biệt trong DNA của NST, là vị trí liên kết với thoi phân bào được gọi là gì?",
+                options: [
+                    { text: "A. Tâm động.", isCorrect: true },
+                    { text: "B. Hai đầu mút NST.", isCorrect: false },
+                    { text: "C. Eo thứ cấp.", isCorrect: false },
+                    { text: "D. Điểm khởi đầu nhân đôi.", isCorrect: false }
+                ],
+                rationale: "Tâm động là điểm đính của NST vào thoi phân bào giúp NST di chuyển về 2 cực tế bào[cite: 5]."
+            },
+            {
+                id: 36, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
+                question: "Trong các mức cấu trúc siêu hiển vi của NST, mức nào sau đây có đường kính 30 nm?",
+                options: [
+                    { text: "A. Sợi siêu xoắn.", isCorrect: false },
+                    { text: "B. Sợi nhiễm sắc.", isCorrect: true },
+                    { text: "C. Sợi cơ bản.", isCorrect: false },
+                    { text: "D. Chromatid.", isCorrect: false }
+                ],
+                rationale: "Sợi cơ bản (10 nm) xoắn mức 2 tạo thành sợi nhiễm sắc có đường kính 30 nm[cite: 5]."
+            },
+
+            // ==================== PHẦN II: CÂU HỎI TRẮC NGHIỆM ĐÚNG / SAI (6 CÂU) ====================
+            {
+                id: 37, part: "p2", type: "tf", category: "Phần II: Câu hỏi Đúng/Sai (Câu 1)",
+                question: "Quan sát Hình 22. Một số dạng đột biến cấu trúc NST, mỗi nhận định sau Đúng hay Sai?",
+                svg: `<svg width="320" height="150" viewBox="0 0 320 150" xmlns="http://www.w3.org/2000/svg">
+                    <g transform="translate(10,10)">
+                        <rect x="0" y="0" width="130" height="24" rx="4" fill="#1e293b" stroke="#38bdf8"/>
+                        <text x="65" y="16" text-anchor="middle" fill="#e2e8f0" font-size="10">ABCDE FGH</text>
+                        <text x="145" y="16" fill="#f43f5e" font-size="12">→</text>
+                        <rect x="160" y="0" width="110" height="24" rx="4" fill="#1e293b" stroke="#f43f5e"/>
+                        <text x="215" y="16" text-anchor="middle" fill="#e2e8f0" font-size="10">ABCDE FG</text>
+                    </g>
+                    <g transform="translate(10,45)">
+                        <rect x="0" y="0" width="130" height="24" rx="4" fill="#1e293b" stroke="#38bdf8"/>
+                        <text x="65" y="16" text-anchor="middle" fill="#e2e8f0" font-size="10">ABCDE FGH</text>
+                        <text x="145" y="16" fill="#f43f5e" font-size="12">→</text>
+                        <rect x="160" y="0" width="150" height="24" rx="4" fill="#1e293b" stroke="#f43f5e"/>
+                        <text x="235" y="16" text-anchor="middle" fill="#e2e8f0" font-size="10">ABCB CDE FGH</text>
+                    </g>
+                    <g transform="translate(10,80)">
+                        <rect x="0" y="0" width="130" height="24" rx="4" fill="#1e293b" stroke="#38bdf8"/>
+                        <text x="65" y="16" text-anchor="middle" fill="#e2e8f0" font-size="10">ABCDE FGH</text>
+                        <text x="145" y="16" fill="#f43f5e" font-size="12">→</text>
+                        <rect x="160" y="0" width="130" height="24" rx="4" fill="#1e293b" stroke="#f43f5e"/>
+                        <text x="225" y="16" text-anchor="middle" fill="#e2e8f0" font-size="10">ADCBE FGH</text>
+                    </g>
+                </svg>`,
+                statements: [
+                    { text: "a) Hình a mô tả dạng đột biến mất đoạn NST.", isTrue: true },
+                    { text: "b) Thể đột biến ở dạng b có thể tăng cường hoặc giảm bớt sự biểu hiện của tính trạng.", isTrue: true },
+                    { text: "c) Dạng đột biến ở hình c ít có giá trị trong tiến hóa vì chỉ thay đổi trật tự sắp xếp các gene trên NST.", isTrue: false },
+                    { text: "d) Dạng a không có ý nghĩa trong tiến hóa do thường gây chết cho thể đột biến.", isTrue: false }
+                ],
+                rationale: "a Đúng (mất đoạn H). b Đúng (lặp đoạn B, C làm thay đổi số lượng gene). c Sai vì đảo đoạn góp phần phân hóa loài mới. d Sai vì đột biến mất đoạn nhỏ có thể dùng để loại bỏ gene có hại hoặc xác định vị trí gene[cite: 6]."
+            },
+            {
+                id: 38, part: "p2", type: "tf", category: "Phần II: Câu hỏi Đúng/Sai (Câu 2)",
+                question: "Khi nói về nguyên nhân và cơ chế phát sinh đột biến gene, các kết luận dưới đây đúng hay sai?",
+                statements: [
+                    { text: "a) Đột biến gene xảy ra có thể do tác động vật lý, hóa học, sinh học hoặc do rối loạn trao đổi chất xảy ra trong tế bào.", isTrue: true },
+                    { text: "b) Base hiếm có vị trí liên kết hydrogen bị thay đổi dẫn đến làm phát sinh đột biến mất cặp nucleotide trong quá trình nhân đôi DNA.", isTrue: false },
+                    { text: "c) Hóa chất 5-BU là chất gây thay thế cặp A-T bằng cặp G-C.", isTrue: true },
+                    { text: "d) Tia phóng xạ có khả năng ion hóa các nguyên tử vật chất nên có thể gây nên đột biến thay thế nucleotide.", isTrue: true }
+                ],
+                rationale: "a, c, d Đúng. Ý b Sai vì base hiếm gây nên đột biến thay thế cặp nucleotide chứ không phải mất cặp[cite: 6]."
+            },
+            {
+                id: 39, part: "p2", type: "tf", category: "Phần II: Câu hỏi Đúng/Sai (Câu 3)",
+                question: "Hình sau đây mô tả cơ chế xảy ra đột biến của DNA gốc/gene. Mỗi nhận định sau đây là Đúng hay Sai?",
+                svg: `<svg width="300" height="120" viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg">
+                    <g transform="translate(10,20)">
+                        <text x="50" y="20" fill="#38bdf8" font-size="11">ACGTC</text>
+                        <text x="50" y="40" fill="#38bdf8" font-size="11">TGCAG</text>
+                        <text x="50" y="60" fill="#e2e8f0" font-size="10">Gene H1</text>
+                        <text x="110" y="30" fill="#f43f5e" font-size="14">→</text>
+                        <text x="130" y="20" fill="#f43f5e" font-size="11">AC*GTC</text>
+                        <text x="130" y="40" fill="#f43f5e" font-size="11">T G C A G</text>
+                        <text x="130" y="60" fill="#e2e8f0" font-size="10">Gene H2 (G*)</text>
+                    </g>
+                </svg>`,
+                statements: [
+                    { text: "a) Gene H1 là gene không bị đột biến.", isTrue: true },
+                    { text: "b) Gene H5 có mạch x2 chính là mạch x2 của gene H1.", isTrue: true },
+                    { text: "c) Do base hiếm (G*) nên qua 3 lần nhân đôi mới phát sinh 1 gene đột biến thay thế G-C bằng A-T.", isTrue: false },
+                    { text: "d) Từ 2 gene ban đầu có G* qua 4 lần nhân đôi sẽ phát sinh 32 gene, trong đó 14 gene đột biến vị trí nucleotide được thay đổi là G-C thành A-T.", isTrue: true }
+                ],
+                rationale: "a, b, d Đúng. Ý c Sai vì base hiếm G* qua 2 lần nhân đôi đã tạo ra đột biến gen thay thế G-C thành A-T[cite: 6]."
+            },
+            {
+                id: 40, part: "p2", type: "tf", category: "Phần II: Câu hỏi Đúng/Sai (Câu 4)",
+                question: "Khi nghiên cứu DNA của 4 chủng vi khuẩn thu được bảng sau:\nChủng I: A=600, T=600, G=900, C=900\nChủng II: A=900, T=900, G=600, C=600\nChủng III: A=500, T=500, G=700, C=700\nChủng IV: A=700, T=700, G=800, C=800\nCác nhận xét dưới đây đúng hay sai?",
+                statements: [
+                    { text: "a) Tổng số nucleotide của chủng I nhiều hơn chủng II.", isTrue: false },
+                    { text: "b) Chủng I và chủng IV có chiều dài phân tử bằng nhau.", isTrue: true },
+                    { text: "c) Phân tử DNA của Chủng II có số liên kết hydrogen ít hơn phân tử DNA của chủng IV.", isTrue: true },
+                    { text: "d) Phân tử DNA của chủng IV có nhiệt độ nóng chảy cao nhất.", isTrue: false }
+                ],
+                rationale: "a Sai vì N(I) = N(II) = 3000. b Đúng vì N(I) = N(IV) = 3000 -> dài bằng nhau. c Đúng vì H(II) = 3600 < H(IV) = 3800. d Sai vì chủng I có nhiệt độ nóng chảy cao nhất (H = 3900)[cite: 6]."
+            },
+            {
+                id: 41, part: "p2", type: "tf", category: "Phần II: Câu hỏi Đúng/Sai (Câu 5)",
+                question: "Gene D ở sinh vật nhân sơ có 1500 cặp nucleotide và số nucleotide loại A chiếm 15% tổng số nucleotide của gene. Trên mạch 1 của gene có 150 nucleotide loại T và có 450 nucleotide loại G. Mỗi kết luận dưới đây đúng hay sai?",
+                statements: [
+                    { text: "a) Trên mạch 1 của gene D có A/G = 6/2.", isTrue: false },
+                    { text: "b) Số liên kết hydrogen của gene D là 3450.", isTrue: true },
+                    { text: "c) Trên mạch 2 của gene D có T = 2A.", isTrue: true },
+                    { text: "d) Gene D có chiều dài 5100 Å.", isTrue: true }
+                ],
+                rationale: "Gene D: N = 3000, A = T = 450 (15%), G = C = 1050 (35%).\nMạch 1: T1 = 150 => A1 = A - T1 = 450 - 150 = 300. G1 = 450 => C1 = G - G1 = 1050 - 450 = 600.\na) A1/G1 = 300/450 = 2/3 (Sai). b) H = 2A + 3G = 2*450 + 3*1050 = 3450 (Đúng). c) Mạch 2: A2 = T1 = 150, T2 = A1 = 300 => T2 = 2*A2 (Đúng). d) L = (3000/2)*3.4 = 5100 Å (Đúng)[cite: 6]."
+            },
+            {
+                id: 42, part: "p2", type: "tf", category: "Phần II: Câu hỏi Đúng/Sai (Câu 6)",
+                question: "Hình bên dưới mô tả một giai đoạn của quá trình phiên mã ở sinh vật nhân sơ. Mỗi nhận định sau đây đúng hay sai?",
+                svg: `<svg width="300" height="130" viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M 20,30 Q 150,10 280,30" fill="none" stroke="#38bdf8" stroke-width="2"/>
+                    <path d="M 20,60 Q 150,80 280,60" fill="none" stroke="#38bdf8" stroke-width="2"/>
+                    <path d="M 80,60 Q 180,100 250,100" fill="none" stroke="#f43f5e" stroke-width="2"/>
+                    <text x="180" y="95" fill="#f43f5e" font-size="10">CUGAGAGUA</text>
+                    <text x="120" y="55" fill="#38bdf8" font-size="10">AUGAGACGC</text>
+                    <text x="210" y="115" fill="#e2e8f0" font-size="10">Chiều phiên mã ←</text>
+                </svg>`,
+                statements: [
+                    { text: "a) Vị trí (e) tương ứng với đầu 5' của mạch làm khuôn.", isTrue: false },
+                    { text: "b) Quá trình phiên mã của gene này diễn ra trên cả hai mạch.", isTrue: false },
+                    { text: "c) Trình tự các nucleotide trên đoạn mRNA tính từ bộ ba mở đầu (1-2-3) đến vị trí (g) gồm 7 codon.", isTrue: true },
+                    { text: "d) Nếu nucleotide (?) trên hình là U thì phân tử mRNA này khi làm khuôn dịch mã sẽ tạo ra chuỗi polypeptide có 4 amino acid (không kể amino acid mở đầu).", isTrue: true }
+                ],
+                rationale: "a, b Sai vì phiên mã chỉ diễn ra trên 1 mạch khuôn theo chiều 3' -> 5'. c, d Đúng[cite: 6]."
+            },
+
+            // ==================== PHẦN III: CÂU HỎI TRẢ LỜI NGẮN (10 CÂU) ====================
+            {
+                id: 43, part: "p3", type: "short", category: "Phần III: Trả lời ngắn / Tính toán",
+                question: "Lúa mì hoang dại có bộ NST 2n = 24. Xác định số NST có trong kỳ giữa của lúa mì trồng hiện nay là dạng đột biến thể lục bội là bao nhiêu NST?",
+                answer: "72",
+                rationale: "Thể lục bội (6n): n = 12 => 6n = 6 * 12 = 72 NST[cite: 6]."
+            },
+            {
+                id: 44, part: "p3", type: "short", category: "Phần III: Trả lời ngắn / Tính toán",
+                question: "Trong một thí nghiệm, cho một phân tử DNA nặng N15 chuyển sang nuôi cấy vào môi trường N14, sau 2 lần tái bản tạo ra bao nhiêu phần trăm phân tử DNA chứa N15 ban đầu?",
+                svg: `<svg width="260" height="90" viewBox="0 0 260 90" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="20" y="10" width="30" height="70" rx="4" fill="#1e293b" stroke="#38bdf8"/>
+                    <line x1="20" y1="65" x2="50" y2="65" stroke="#f43f5e" stroke-width="3"/>
+                    <text x="35" y="83" text-anchor="middle" fill="#e2e8f0" font-size="9">N15/N15</text>
+                    <text x="70" y="45" fill="#e2e8f0" font-size="14">→</text>
+                    <rect x="100" y="10" width="30" height="70" rx="4" fill="#1e293b" stroke="#38bdf8"/>
+                    <line x1="100" y1="45" x2="130" y2="45" stroke="#e2e8f0" stroke-width="3"/>
+                    <text x="115" y="83" text-anchor="middle" fill="#e2e8f0" font-size="9">N14/N15</text>
+                    <text x="150" y="45" fill="#e2e8f0" font-size="14">→</text>
+                    <rect x="180" y="10" width="30" height="70" rx="4" fill="#1e293b" stroke="#38bdf8"/>
+                    <line x1="180" y1="25" x2="210" y2="25" stroke="#10b981" stroke-width="3"/>
+                    <line x1="180" y1="45" x2="210" y2="45" stroke="#e2e8f0" stroke-width="3"/>
+                    <text x="195" y="83" text-anchor="middle" fill="#e2e8f0" font-size="9">N14, N14/N15</text>
+                </svg>`,
+                answer: "25",
+                rationale: "Sau 2 lần tái bản tạo ra 2^2 = 4 phân tử DNA (8 mạch). Trong đó có 2 mạch N15 ban đầu. Tỉ lệ mạch đơn N15 = 2/8 = 1/4 = 25%[cite: 7]."
+            },
+            {
+                id: 45, part: "p3", type: "short", category: "Phần III: Trả lời ngắn / Tính toán",
+                question: "Tần số đột biến ở một gene nào đó phụ thuộc vào bao nhiêu yếu tố trong các yếu tố sau?\n- Số lượng gene có trong kiểu gene.\n- Đặc điểm cấu trúc của gene.\n- Cường độ, liều lượng, loại tác nhân gây đột biến.\n- Sức chống chịu của cơ thể dưới tác động của môi trường.",
+                answer: "2",
+                rationale: "Tần số đột biến gene phụ thuộc vào: (1) Đặc điểm cấu trúc của gene và (2) Cường độ, liều lượng, loại tác nhân gây đột biến (Đáp án: 2)[cite: 7]."
+            },
+            {
+                id: 46, part: "p3", type: "short", category: "Phần III: Trả lời ngắn / Tính toán",
+                question: "Gene B có tổng số nucleotide là 3000, có A = 30%. Đột biến thay thế 1 cặp A-T bằng 1 cặp G-C tạo thành gene b. Số lượng nucleotide loại A của gene b là bao nhiêu?",
+                answer: "899",
+                rationale: "Gene B: N = 3000, A = 30% * 3000 = 900. Đột biến thay 1 cặp A-T bằng G-C làm A giảm 1 -> A(b) = 900 - 1 = 899[cite: 7]."
+            },
+            {
+                id: 47, part: "p3", type: "short", category: "Phần III: Trả lời ngắn / Tính toán",
+                question: "Hình bên dưới mô tả cấu trúc trong nhân tế bào. Có bao nhiêu nhận định đúng trong các nhận định sau?\n[1] Là hai chromatid chị em.\n[2] Là hai chromatid không chị em.\n[3], [4], [6] là các locus của cùng một gene.\n- Mỗi chromatid chứa 1 phân tử DNA mạch kép.",
+                svg: `<svg width="200" height="130" viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                    <g transform="translate(40,10)">
+                        <path d="M 30,10 Q 10,60 30,110 M 30,10 Q 50,60 30,110" fill="none" stroke="#38bdf8" stroke-width="3"/>
+                        <circle cx="30" cy="60" r="6" fill="#f43f5e"/>
+                        <path d="M 90,10 Q 70,60 90,110 M 90,10 Q 110,60 90,110" fill="none" stroke="#38bdf8" stroke-width="3"/>
+                        <circle cx="90" cy="60" r="6" fill="#f43f5e"/>
+                        <line x1="20" y1="30" x2="40" y2="30" stroke="#10b981" stroke-width="2"/>
+                        <text x="12" y="33" fill="#e2e8f0" font-size="10">1</text>
+                        <line x1="80" y1="30" x2="100" y2="30" stroke="#10b981" stroke-width="2"/>
+                        <text x="105" y="33" fill="#e2e8f0" font-size="10">2</text>
+                    </g>
+                </svg>`,
+                answer: "3",
+                rationale: "Có 3 nhận định đúng theo tài liệu chuẩn đính kèm[cite: 7]."
+            },
+            {
+                id: 48, part: "p3", type: "short", category: "Phần III: Trả lời ngắn / Tính toán",
+                question: "Ở 1 giống lúa, chiều cao của cây do 3 cặp gene (A,a; B,b; D,d) cùng quy định, các gene phân li độc lập. Cây cao nhất có chiều cao 100 cm, cây thấp nhất có chiều cao bao nhiêu cm? Biết mỗi allele trội làm cây cao thêm 5 cm.",
+                answer: "70",
+                rationale: "Cây cao nhất mang 6 allele trội (AABBCC = 100 cm). Cây thấp nhất không mang allele trội nào (aabbcc). 6 allele trội đóng góp: 6 * 5 = 30 cm. Vậy cây thấp nhất = 100 - 30 = 70 cm[cite: 7]."
+            },
+            {
+                id: 49, part: "p3", type: "short", category: "Phần III: Trả lời ngắn / Tính toán",
+                question: "Hình bên dưới mô tả một cấu trúc trong nhân tế bào (Nucleosome). Có bao nhiêu nhận định đúng?\n[1] Là những phân tử protein histone.\n[2] Là đoạn DNA chứa khoảng 146 cặp nucleotide.\n- Đường kính của đơn vị này nhỏ hơn đường kính sợi cơ bản.",
+                svg: `<svg width="180" height="120" viewBox="0 0 180 120" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="90" cy="60" r="35" fill="#334155" stroke="#10b981" stroke-width="2"/>
+                    <circle cx="80" cy="50" r="12" fill="#64748b"/>
+                    <circle cx="100" cy="50" r="12" fill="#64748b"/>
+                    <circle cx="80" cy="70" r="12" fill="#64748b"/>
+                    <circle cx="100" cy="70" r="12" fill="#64748b"/>
+                    <path d="M 30,60 C 50,10 130,10 150,60 C 130,110 50,110 30,60" fill="none" stroke="#f43f5e" stroke-width="3"/>
+                </svg>`,
+                answer: "3",
+                rationale: "Có 3 nhận định đúng về cấu trúc Nucleosome[cite: 7]."
+            },
+            {
+                id: 50, part: "p3", type: "short", category: "Phần III: Trả lời ngắn / Tính toán",
+                question: "Giả sử có một gene với số lượng các cặp nucleotide ứng với mỗi đoạn exon và intron như sau:\nExon 1 (90) - Intron 1 (130) - Exon 2 (150) - Intron 2 (90) - Exon 3 (90) - Intron 3 (120) - Exon 4 (150).\nPhân tử protein có chức năng sinh học được dịch mã từ gene này chứa bao nhiêu amino acid?",
+                answer: "158",
+                rationale: "Tổng số cặp nucleotide ở các đoạn Exon = 90 + 150 + 90 + 150 = 480 cặp np -> 480 codon trên mRNA. Số amino acid trong protein hoàn chỉnh = (480 / 3) - 2 = 160 - 2 = 158 amino acid[cite: 7]."
+            },
+            {
+                id: 51, part: "p3", type: "short", category: "Phần III: Trả lời ngắn / Tính toán",
+                question: "Một DNA sau khi tái bản k lần tạo ra được 64 DNA con. Tính k?",
+                answer: "6",
+                rationale: "Ta có 2^k = 64 => k = 6[cite: 7]."
+            },
+            {
+                id: 52, part: "p3", type: "short", category: "Phần III: Trả lời ngắn / Tính toán",
+                question: "Sắp xếp các bước trong quy trình chuyển gene tạo vi khuẩn sản xuất insulin theo đúng thứ tự (viết liền các số):\n(1) Tách plasmid và gene insulin.\n(2) Phân lập dòng tế bào chứa DNA tái tổ hợp.\n(3) Chuyển DNA tái tổ hợp vào tế bào vi khuẩn.\n(4) Tạo DNA tái tổ hợp mang gene insulin.",
+                answer: "1432",
+                rationale: "Thứ tự quy trình kĩ thuật chuyển gene: (1) Tách -> (4) Tạo DNA tái tổ hợp -> (3) Chuyển vào vi khuẩn -> (2) Phân lập dòng tế bào. Nhập dạng chuỗi số: 1432[cite: 7]."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let scoreCorrect = 0;
+        let scoreIncorrect = 0;
+        let filteredQuestions = [...questionsData];
+        let answeredQuestions = new Set();
+        let tfAnsweredMap = {};
+
+        function startQuiz(mode) {
+            if (mode === 'p1') {
+                filteredQuestions = questionsData.filter(q => q.part === 'p1');
+            } else {
+                filteredQuestions = [...questionsData];
+            }
+
+            currentQuestionIndex = 0;
+            scoreCorrect = 0;
+            scoreIncorrect = 0;
+            answeredQuestions.clear();
+            tfAnsweredMap = {};
+
+            document.getElementById('welcome-view').classList.add('hidden');
+            document.getElementById('result-view').classList.add('hidden');
+            document.getElementById('quiz-view').classList.remove('hidden');
+            document.getElementById('score-board').classList.remove('hidden');
+
+            loadQuestion();
+        }
+
+        function backHome() {
+            document.getElementById('quiz-view').classList.add('hidden');
+            document.getElementById('score-board').classList.add('hidden');
+            document.getElementById('welcome-view').classList.remove('hidden');
+        }
+
+        function loadQuestion() {
+            const q = filteredQuestions[currentQuestionIndex];
+            document.getElementById('question-tag').innerText = q.category;
+            document.getElementById('question-progress').innerText = `Câu ${currentQuestionIndex + 1} / ${filteredQuestions.length}`;
+            document.getElementById('question-text').innerText = q.question;
+
+            // Xử lý hình vẽ SVG
+            const imgBox = document.getElementById('image-container');
+            if (q.svg) {
+                imgBox.innerHTML = q.svg;
+                imgBox.classList.remove('hidden');
+            } else {
+                imgBox.innerHTML = '';
+                imgBox.classList.add('hidden');
+            }
+
+            const optionsContainer = document.getElementById('options-container');
+            const tfContainer = document.getElementById('tf-container');
+            const inputContainer = document.getElementById('input-container');
+            const feedbackBox = document.getElementById('feedback-box');
+
+            feedbackBox.classList.add('hidden');
+            optionsContainer.innerHTML = '';
+            tfContainer.innerHTML = '';
+
+            optionsContainer.classList.add('hidden');
+            tfContainer.classList.add('hidden');
+            inputContainer.classList.add('hidden');
+
+            if (q.type === 'mcq') {
+                optionsContainer.classList.remove('hidden');
+                q.options.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full text-left p-4 rounded-xl bg-slate-900 border border-slate-700 hover:border-emerald-500 transition text-slate-200 font-medium cursor-pointer option-btn";
+                    btn.innerText = opt.text;
+                    btn.onclick = () => selectOption(idx, btn, q);
+                    optionsContainer.appendChild(btn);
+                });
+            } else if (q.type === 'tf') {
+                tfContainer.classList.remove('hidden');
+                q.statements.forEach((st, idx) => {
+                    const row = document.createElement('div');
+                    row.className = "p-4 rounded-xl bg-slate-900 border border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3";
+                    
+                    const textSpan = document.createElement('div');
+                    textSpan.className = "text-sm text-slate-200";
+                    textSpan.innerText = st.text;
+                    
+                    const btnGroup = document.createElement('div');
+                    btnGroup.className = "flex gap-2 shrink-0";
+
+                    const btnDung = document.createElement('button');
+                    btnDung.className = `px-4 py-1.5 rounded-lg border border-slate-700 text-xs font-semibold bg-slate-800 hover:bg-emerald-500/20 hover:border-emerald-500 transition cursor-pointer tf-btn-d-${currentQuestionIndex}-${idx}`;
+                    btnDung.innerText = "ĐÚNG";
+
+                    const btnSai = document.createElement('button');
+                    btnSai.className = `px-4 py-1.5 rounded-lg border border-slate-700 text-xs font-semibold bg-slate-800 hover:bg-rose-500/20 hover:border-rose-500 transition cursor-pointer tf-btn-s-${currentQuestionIndex}-${idx}`;
+                    btnSai.innerText = "SAI";
+
+                    btnDung.onclick = () => checkTfAnswer(idx, true, q, btnDung, btnSai);
+                    btnSai.onclick = () => checkTfAnswer(idx, false, q, btnDung, btnSai);
+
+                    btnGroup.appendChild(btnDung);
+                    btnGroup.appendChild(btnSai);
+                    row.appendChild(textSpan);
+                    row.appendChild(btnGroup);
+                    tfContainer.appendChild(row);
+                });
+            } else if (q.type === 'short') {
+                inputContainer.classList.remove('hidden');
+                document.getElementById('user-short-input').value = '';
+            }
+
+            document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
+        }
+
+        function selectOption(selectedIndex, btnElement, q) {
+            if (answeredQuestions.has(currentQuestionIndex)) return;
+            answeredQuestions.add(currentQuestionIndex);
+
+            const allBtns = document.querySelectorAll('.option-btn');
+            const selectedOpt = q.options[selectedIndex];
+
+            allBtns.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (q.options[idx].isCorrect) {
+                    btn.classList.add('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-300');
+                } else if (idx === selectedIndex) {
+                    btn.classList.add('bg-rose-500/20', 'border-rose-500', 'text-rose-300');
+                }
+            });
+
+            const feedbackBox = document.getElementById('feedback-box');
+            feedbackBox.classList.remove('hidden');
+
+            if (selectedOpt.isCorrect) {
+                scoreCorrect++;
+                feedbackBox.className = "mt-6 p-4 rounded-xl border bg-emerald-500/10 border-emerald-500/30 text-emerald-300";
+                document.getElementById('feedback-title').innerText = "Chính xác! 🎉";
+            } else {
+                scoreIncorrect++;
+                feedbackBox.className = "mt-6 p-4 rounded-xl border bg-rose-500/10 border-rose-500/30 text-rose-300";
+                document.getElementById('feedback-title').innerText = "Chưa chính xác! ❌";
+            }
+            document.getElementById('feedback-content').innerText = q.rationale;
+            updateScoreBoard();
+        }
+
+        function checkTfAnswer(stmtIndex, userChoice, q, btnD, btnS) {
+            const mapKey = `${currentQuestionIndex}-${stmtIndex}`;
+            if (tfAnsweredMap[mapKey]) return;
+            tfAnsweredMap[mapKey] = true;
+
+            const isCorrect = (userChoice === q.statements[stmtIndex].isTrue);
+            
+            btnD.disabled = true;
+            btnS.disabled = true;
+
+            if (userChoice) {
+                btnD.classList.add(isCorrect ? 'bg-emerald-500/30' : 'bg-rose-500/30', 'border-emerald-500');
+            } else {
+                btnS.classList.add(isCorrect ? 'bg-emerald-500/30' : 'bg-rose-500/30', 'border-emerald-500');
+            }
+
+            if (isCorrect) scoreCorrect++; else scoreIncorrect++;
+
+            let answeredCount = 0;
+            for(let i=0; i<q.statements.length; i++) {
+                if(tfAnsweredMap[`${currentQuestionIndex}-${i}`]) answeredCount++;
+            }
+
+            if (answeredCount === q.statements.length) {
+                answeredQuestions.add(currentQuestionIndex);
+                const feedbackBox = document.getElementById('feedback-box');
+                feedbackBox.classList.remove('hidden');
+                feedbackBox.className = "mt-6 p-4 rounded-xl border bg-slate-900 border-slate-700 text-slate-300";
+                document.getElementById('feedback-title').innerText = "Giải thích chi tiết các ý:";
+                document.getElementById('feedback-content').innerText = q.rationale;
+            }
+            updateScoreBoard();
+        }
+
+        function submitShortAnswer() {
+            if (answeredQuestions.has(currentQuestionIndex)) return;
+            answeredQuestions.add(currentQuestionIndex);
+
+            const q = filteredQuestions[currentQuestionIndex];
+            const userVal = document.getElementById('user-short-input').value.trim();
+            const feedbackBox = document.getElementById('feedback-box');
+
+            const isCorrect = userVal.toLowerCase() === q.answer.toLowerCase();
+
+            feedbackBox.classList.remove('hidden');
+            if (isCorrect) {
+                scoreCorrect++;
+                feedbackBox.className = "mt-6 p-4 rounded-xl border bg-emerald-500/10 border-emerald-500/30 text-emerald-300";
+                document.getElementById('feedback-title').innerText = "Chính xác! 🎉";
+            } else {
+                scoreIncorrect++;
+                feedbackBox.className = "mt-6 p-4 rounded-xl border bg-rose-500/10 border-rose-500/30 text-rose-300";
+                document.getElementById('feedback-title').innerText = `Chưa chính xác! (Đáp án chuẩn: ${q.answer}) ❌`;
+            }
+            document.getElementById('feedback-content').innerText = q.rationale;
+            updateScoreBoard();
+        }
+
+        function updateScoreBoard() {
+            document.getElementById('correct-count').innerText = scoreCorrect;
+            document.getElementById('incorrect-count').innerText = scoreIncorrect;
+            document.getElementById('progress-count').innerText = `${currentQuestionIndex + 1}/${filteredQuestions.length}`;
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < filteredQuestions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+                updateScoreBoard();
+            } else {
+                showResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+                updateScoreBoard();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-view').classList.add('hidden');
+            document.getElementById('score-board').classList.add('hidden');
+            document.getElementById('result-view').classList.remove('hidden');
+            document.getElementById('final-correct').innerText = scoreCorrect;
+            document.getElementById('final-incorrect').innerText = scoreIncorrect;
+        }
+
+        function resetApp() {
+            document.getElementById('result-view').classList.add('hidden');
+            document.getElementById('welcome-view').classList.remove('hidden');
+        }
+    </script>
 </body>
 </html>
