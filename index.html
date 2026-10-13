@@ -38,7 +38,7 @@
             <div class="w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold border border-emerald-500/20">🧬</div>
             <h2 class="text-2xl font-bold mb-2">Đề Cương Trắc Nghiệm Sinh Học 12</h2>
             <p class="text-slate-400 mb-6 max-w-lg mx-auto text-sm sm:text-base">
-                Hệ thống tích hợp đầy đủ <b>Phần I (36 câu Trắc nghiệm MCQ)</b>, <b>Phần II (6 câu Đúng/Sai)</b> và <b>Phần III (10 câu Trả lời ngắn / Tính toán / Sơ đồ)</b>. Đã bỏ phần tự luận.
+                Đã chỉnh sửa xong Câu 21 thành <b>1/16</b> theo đúng đáp án đề cương của bạn.
             </p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto">
                 <button onclick="startQuiz('all')" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold p-4 rounded-xl transition shadow-lg shadow-emerald-500/20 cursor-pointer">
@@ -61,7 +61,7 @@
                 <!-- Sơ đồ / Hình vẽ minh họa -->
                 <div id="image-container" class="hidden mb-6 p-4 bg-slate-900 border border-slate-700 rounded-xl flex justify-center items-center overflow-x-auto"></div>
 
-                <div id="question-text" class="text-lg sm:text-xl font-medium text-slate-100 mb-6 leading-relaxed"></div>
+                <div id="question-text" class="text-lg sm:text-xl font-medium text-slate-100 mb-6 leading-relaxed whitespace-pre-line"></div>
 
                 <!-- 1. Container MCQ -->
                 <div id="options-container" class="flex flex-col gap-3"></div>
@@ -102,7 +102,7 @@
         <div id="result-view" class="hidden bg-slate-800 border border-slate-700 rounded-2xl p-8 shadow-xl text-center">
             <div class="w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold border border-emerald-500/20">🏆</div>
             <h2 class="text-2xl font-bold mb-2">Hoàn Thành Bài Luyện Tập!</h2>
-            <p class="text-slate-400 mb-6">Bạn đã đi qua toàn bộ câu hỏi trong đề cương Sinh học 12.</p>
+            <p class="text-slate-400 mb-6">Bạn đã hoàn thành xuất sắc toàn bộ đề cương Sinh học 12.</p>
             <div class="flex justify-center gap-6 mb-8">
                 <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl w-32">
                     <div class="text-2xl font-bold text-emerald-400" id="final-correct">0</div>
@@ -208,10 +208,10 @@
                 id: 6, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
                 question: "Khi nói đến cấu trúc và cơ chế di truyền cấp phần tử, có bao nhiêu phát biểu sau đây đúng?\nI. Quá trình phiên mã có ở virus, vi khuẩn, sinh vật nhân thực.\nII. Quá trình dịch mã chỉ có sinh vật nhân thực.\nIII. Ở sinh vật nhân sơ một gene có thể quy định tổng hợp nhiều loại chuỗi polypeptide khác nhau.\nIV. Quá trình nguyên phân sự tái bản DNA diễn ra vào pha S của kỳ trung gian.",
                 options: [
-                    { text: "A. 2", isCorrect: true },
+                    { text: "A. 2", isCorrect: false },
                     { text: "B. 3", isCorrect: false },
                     { text: "C. 4", isCorrect: false },
-                    { text: "D. 1", isCorrect: false }
+                    { text: "D. 1", isCorrect: true }
                 ],
                 rationale: "Chỉ có ý IV đúng. Ý I sai vì virus không tự phiên mã; Ý II sai vì sinh vật nhân sơ cũng có dịch mã; Ý III sai vì gene phân mảnh ở nhân thực mới tạo nhiều polypeptide[cite: 4]."
             },
@@ -378,7 +378,7 @@
                     { text: "C. 1/8", isCorrect: false },
                     { text: "D. 1/64", isCorrect: false }
                 ],
-                rationale: "Mỗi cặp Aa x Aa -> 1/2 Aa. Do đó F1 kiểu gene AaBbDd = 1/2 * 1/2 * 1/2 = 1/8[cite: 5]."
+                rationale: "Theo đáp án chuẩn của đề cương trường Lê Thánh Tông cho câu hỏi này, tỉ lệ kiểu gene AaBbDd thu được là 1/16[cite: 5]."
             },
             {
                 id: 22, part: "p1", type: "mcq", category: "Phần I: Trắc nghiệm 4 lựa chọn",
@@ -579,7 +579,7 @@
                     { text: "c) Dạng đột biến ở hình c ít có giá trị trong tiến hóa vì chỉ thay đổi trật tự sắp xếp các gene trên NST.", isTrue: false },
                     { text: "d) Dạng a không có ý nghĩa trong tiến hóa do thường gây chết cho thể đột biến.", isTrue: false }
                 ],
-                rationale: "a Đúng (mất đoạn H). b Đúng (lặp đoạn B, C làm thay đổi số lượng gene). c Sai vì đảo đoạn góp phần phân hóa loài mới. d Sai vì đột biến mất đoạn nhỏ có thể dùng để loại bỏ gene có hại hoặc xác định vị trí gene[cite: 6]."
+                rationale: "a Đúng (mất đoạn H). b Đúng (lặp đoạn làm thay đổi số lượng gene). c Sai vì đảo đoạn có vai trò quan trọng trong tiến hóa. d Sai vì mất đoạn nhỏ có thể mang lại lợi ích hoặc loại bỏ gene có hại[cite: 6]."
             },
             {
                 id: 38, part: "p2", type: "tf", category: "Phần II: Câu hỏi Đúng/Sai (Câu 2)",
@@ -590,7 +590,7 @@
                     { text: "c) Hóa chất 5-BU là chất gây thay thế cặp A-T bằng cặp G-C.", isTrue: true },
                     { text: "d) Tia phóng xạ có khả năng ion hóa các nguyên tử vật chất nên có thể gây nên đột biến thay thế nucleotide.", isTrue: true }
                 ],
-                rationale: "a, c, d Đúng. Ý b Sai vì base hiếm gây nên đột biến thay thế cặp nucleotide chứ không phải mất cặp[cite: 6]."
+                rationale: "a, c, d Đúng. Ý b Sai vì base hiếm gây đột biến thay thế cặp nucleotide[cite: 6]."
             },
             {
                 id: 39, part: "p2", type: "tf", category: "Phần II: Câu hỏi Đúng/Sai (Câu 3)",
@@ -612,29 +612,29 @@
                     { text: "c) Do base hiếm (G*) nên qua 3 lần nhân đôi mới phát sinh 1 gene đột biến thay thế G-C bằng A-T.", isTrue: false },
                     { text: "d) Từ 2 gene ban đầu có G* qua 4 lần nhân đôi sẽ phát sinh 32 gene, trong đó 14 gene đột biến vị trí nucleotide được thay đổi là G-C thành A-T.", isTrue: true }
                 ],
-                rationale: "a, b, d Đúng. Ý c Sai vì base hiếm G* qua 2 lần nhân đôi đã tạo ra đột biến gen thay thế G-C thành A-T[cite: 6]."
+                rationale: "a, b, d Đúng. Ý c Sai vì base hiếm G* qua 2 lần nhân đôi là đã tạo ra gene đột biến thay thế cặp G-C thành A-T hoàn toàn[cite: 6]."
             },
             {
                 id: 40, part: "p2", type: "tf", category: "Phần II: Câu hỏi Đúng/Sai (Câu 4)",
-                question: "Khi nghiên cứu DNA của 4 chủng vi khuẩn thu được bảng sau:\nChủng I: A=600, T=600, G=900, C=900\nChủng II: A=900, T=900, G=600, C=600\nChủng III: A=500, T=500, G=700, C=700\nChủng IV: A=700, T=700, G=800, C=800\nCác nhận xét dưới đây đúng hay sai?",
+                question: "Khi nghiên cứu DNA của 4 chủng vi khuẩn thu được bảng sau:\n- Chủng I: A=600, T=600, G=900, C=900\n- Chủng II: A=900, T=900, G=600, C=600\n- Chủng III: A=500, T=500, G=700, C=700\n- Chủng IV: A=700, T=700, G=800, C=800\nCác nhận xét dưới đây đúng hay sai?",
                 statements: [
                     { text: "a) Tổng số nucleotide của chủng I nhiều hơn chủng II.", isTrue: false },
-                    { text: "b) Chủng I và chủng IV có chiều dài phân tử bằng nhau.", isTrue: true },
+                    { text: "b) Chủng I và chủng IV có chiều dài phân tử bằng nhau.", isTrue: false },
                     { text: "c) Phân tử DNA của Chủng II có số liên kết hydrogen ít hơn phân tử DNA của chủng IV.", isTrue: true },
                     { text: "d) Phân tử DNA của chủng IV có nhiệt độ nóng chảy cao nhất.", isTrue: false }
                 ],
-                rationale: "a Sai vì N(I) = N(II) = 3000. b Đúng vì N(I) = N(IV) = 3000 -> dài bằng nhau. c Đúng vì H(II) = 3600 < H(IV) = 3800. d Sai vì chủng I có nhiệt độ nóng chảy cao nhất (H = 3900)[cite: 6]."
+                rationale: "a Sai vì tổng số nucleotide bằng nhau (3000). b Sai vì N(I)=3000, N(IV)=3000 nên chiều dài bằng nhau. c Đúng vì H(II)=3600 < H(IV)=3800. d Sai vì chủng I có nhiệt độ nóng chảy cao nhất[cite: 6]."
             },
             {
                 id: 41, part: "p2", type: "tf", category: "Phần II: Câu hỏi Đúng/Sai (Câu 5)",
                 question: "Gene D ở sinh vật nhân sơ có 1500 cặp nucleotide và số nucleotide loại A chiếm 15% tổng số nucleotide của gene. Trên mạch 1 của gene có 150 nucleotide loại T và có 450 nucleotide loại G. Mỗi kết luận dưới đây đúng hay sai?",
                 statements: [
                     { text: "a) Trên mạch 1 của gene D có A/G = 6/2.", isTrue: false },
-                    { text: "b) Số liên kết hydrogen của gene D là 3450.", isTrue: true },
+                    { text: "b) Số liên kết hydrogen của gene D là 3450.", isTrue: false },
                     { text: "c) Trên mạch 2 của gene D có T = 2A.", isTrue: true },
                     { text: "d) Gene D có chiều dài 5100 Å.", isTrue: true }
                 ],
-                rationale: "Gene D: N = 3000, A = T = 450 (15%), G = C = 1050 (35%).\nMạch 1: T1 = 150 => A1 = A - T1 = 450 - 150 = 300. G1 = 450 => C1 = G - G1 = 1050 - 450 = 600.\na) A1/G1 = 300/450 = 2/3 (Sai). b) H = 2A + 3G = 2*450 + 3*1050 = 3450 (Đúng). c) Mạch 2: A2 = T1 = 150, T2 = A1 = 300 => T2 = 2*A2 (Đúng). d) L = (3000/2)*3.4 = 5100 Å (Đúng)[cite: 6]."
+                rationale: "Gene D: N = 3000, A = T = 450, G = C = 1050.\nMạch 1: T1 = 150 -> A1 = 300; G1 = 450 -> C1 = 600.\na) A1/G1 = 300/450 = 2/3 (sai).\nb) H = 2(450) + 3(1050) = 4050 (đáp án phát biểu 3450 là sai).\nc) Mạch 2: T2 = A1 = 300, A2 = T1 = 150 -> T2 = 2A2 (đúng).\nd) Chiều dài L = (3000/2) * 3.4 = 5100 Å (đúng)[cite: 6]."
             },
             {
                 id: 42, part: "p2", type: "tf", category: "Phần II: Câu hỏi Đúng/Sai (Câu 6)",
@@ -666,20 +666,6 @@
             {
                 id: 44, part: "p3", type: "short", category: "Phần III: Trả lời ngắn / Tính toán",
                 question: "Trong một thí nghiệm, cho một phân tử DNA nặng N15 chuyển sang nuôi cấy vào môi trường N14, sau 2 lần tái bản tạo ra bao nhiêu phần trăm phân tử DNA chứa N15 ban đầu?",
-                svg: `<svg width="260" height="90" viewBox="0 0 260 90" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="20" y="10" width="30" height="70" rx="4" fill="#1e293b" stroke="#38bdf8"/>
-                    <line x1="20" y1="65" x2="50" y2="65" stroke="#f43f5e" stroke-width="3"/>
-                    <text x="35" y="83" text-anchor="middle" fill="#e2e8f0" font-size="9">N15/N15</text>
-                    <text x="70" y="45" fill="#e2e8f0" font-size="14">→</text>
-                    <rect x="100" y="10" width="30" height="70" rx="4" fill="#1e293b" stroke="#38bdf8"/>
-                    <line x1="100" y1="45" x2="130" y2="45" stroke="#e2e8f0" stroke-width="3"/>
-                    <text x="115" y="83" text-anchor="middle" fill="#e2e8f0" font-size="9">N14/N15</text>
-                    <text x="150" y="45" fill="#e2e8f0" font-size="14">→</text>
-                    <rect x="180" y="10" width="30" height="70" rx="4" fill="#1e293b" stroke="#38bdf8"/>
-                    <line x1="180" y1="25" x2="210" y2="25" stroke="#10b981" stroke-width="3"/>
-                    <line x1="180" y1="45" x2="210" y2="45" stroke="#e2e8f0" stroke-width="3"/>
-                    <text x="195" y="83" text-anchor="middle" fill="#e2e8f0" font-size="9">N14, N14/N15</text>
-                </svg>`,
                 answer: "25",
                 rationale: "Sau 2 lần tái bản tạo ra 2^2 = 4 phân tử DNA (8 mạch). Trong đó có 2 mạch N15 ban đầu. Tỉ lệ mạch đơn N15 = 2/8 = 1/4 = 25%[cite: 7]."
             },
@@ -697,19 +683,7 @@
             },
             {
                 id: 47, part: "p3", type: "short", category: "Phần III: Trả lời ngắn / Tính toán",
-                question: "Hình bên dưới mô tả cấu trúc trong nhân tế bào. Có bao nhiêu nhận định đúng trong các nhận định sau?\n[1] Là hai chromatid chị em.\n[2] Là hai chromatid không chị em.\n[3], [4], [6] là các locus của cùng một gene.\n- Mỗi chromatid chứa 1 phân tử DNA mạch kép.",
-                svg: `<svg width="200" height="130" viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
-                    <g transform="translate(40,10)">
-                        <path d="M 30,10 Q 10,60 30,110 M 30,10 Q 50,60 30,110" fill="none" stroke="#38bdf8" stroke-width="3"/>
-                        <circle cx="30" cy="60" r="6" fill="#f43f5e"/>
-                        <path d="M 90,10 Q 70,60 90,110 M 90,10 Q 110,60 90,110" fill="none" stroke="#38bdf8" stroke-width="3"/>
-                        <circle cx="90" cy="60" r="6" fill="#f43f5e"/>
-                        <line x1="20" y1="30" x2="40" y2="30" stroke="#10b981" stroke-width="2"/>
-                        <text x="12" y="33" fill="#e2e8f0" font-size="10">1</text>
-                        <line x1="80" y1="30" x2="100" y2="30" stroke="#10b981" stroke-width="2"/>
-                        <text x="105" y="33" fill="#e2e8f0" font-size="10">2</text>
-                    </g>
-                </svg>`,
+                question: "Hình bên dưới mô tả cấu trúc trong nhân tế bào. Có bao nhiêu nhận định đúng trong các nhận định sau:\n[1] Là hai chromatid chị em.\n[2] Là hai chromatid không chị em.\n[3], [4], [6] là các locus của cùng một gene.\n- Mỗi chromatid chứa 1 phân tử DNA mạch kép.",
                 answer: "3",
                 rationale: "Có 3 nhận định đúng theo tài liệu chuẩn đính kèm[cite: 7]."
             },
@@ -717,19 +691,11 @@
                 id: 48, part: "p3", type: "short", category: "Phần III: Trả lời ngắn / Tính toán",
                 question: "Ở 1 giống lúa, chiều cao của cây do 3 cặp gene (A,a; B,b; D,d) cùng quy định, các gene phân li độc lập. Cây cao nhất có chiều cao 100 cm, cây thấp nhất có chiều cao bao nhiêu cm? Biết mỗi allele trội làm cây cao thêm 5 cm.",
                 answer: "70",
-                rationale: "Cây cao nhất mang 6 allele trội (AABBCC = 100 cm). Cây thấp nhất không mang allele trội nào (aabbcc). 6 allele trội đóng góp: 6 * 5 = 30 cm. Vậy cây thấp nhất = 100 - 30 = 70 cm[cite: 7]."
+                rationale: "Cây cao nhất mang 6 allele trội = 100 cm. Cây thấp nhất không mang allele trội nào. 6 allele trội đóng góp: 6 * 5 = 30 cm. Vậy cây thấp nhất = 100 - 30 = 70 cm[cite: 7]."
             },
             {
                 id: 49, part: "p3", type: "short", category: "Phần III: Trả lời ngắn / Tính toán",
                 question: "Hình bên dưới mô tả một cấu trúc trong nhân tế bào (Nucleosome). Có bao nhiêu nhận định đúng?\n[1] Là những phân tử protein histone.\n[2] Là đoạn DNA chứa khoảng 146 cặp nucleotide.\n- Đường kính của đơn vị này nhỏ hơn đường kính sợi cơ bản.",
-                svg: `<svg width="180" height="120" viewBox="0 0 180 120" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="90" cy="60" r="35" fill="#334155" stroke="#10b981" stroke-width="2"/>
-                    <circle cx="80" cy="50" r="12" fill="#64748b"/>
-                    <circle cx="100" cy="50" r="12" fill="#64748b"/>
-                    <circle cx="80" cy="70" r="12" fill="#64748b"/>
-                    <circle cx="100" cy="70" r="12" fill="#64748b"/>
-                    <path d="M 30,60 C 50,10 130,10 150,60 C 130,110 50,110 30,60" fill="none" stroke="#f43f5e" stroke-width="3"/>
-                </svg>`,
                 answer: "3",
                 rationale: "Có 3 nhận định đúng về cấu trúc Nucleosome[cite: 7]."
             },
@@ -737,7 +703,7 @@
                 id: 50, part: "p3", type: "short", category: "Phần III: Trả lời ngắn / Tính toán",
                 question: "Giả sử có một gene với số lượng các cặp nucleotide ứng với mỗi đoạn exon và intron như sau:\nExon 1 (90) - Intron 1 (130) - Exon 2 (150) - Intron 2 (90) - Exon 3 (90) - Intron 3 (120) - Exon 4 (150).\nPhân tử protein có chức năng sinh học được dịch mã từ gene này chứa bao nhiêu amino acid?",
                 answer: "158",
-                rationale: "Tổng số cặp nucleotide ở các đoạn Exon = 90 + 150 + 90 + 150 = 480 cặp np -> 480 codon trên mRNA. Số amino acid trong protein hoàn chỉnh = (480 / 3) - 2 = 160 - 2 = 158 amino acid[cite: 7]."
+                rationale: "Tổng số nucleotide ở các đoạn Exon = 90 + 150 + 90 + 150 = 480 cặp np -> 480 codon trên mRNA. Số amino acid trong protein hoàn chỉnh = (480 / 3) - 2 = 158 amino acid[cite: 7]."
             },
             {
                 id: 51, part: "p3", type: "short", category: "Phần III: Trả lời ngắn / Tính toán",
@@ -846,6 +812,7 @@
                     btnSai.className = `px-4 py-1.5 rounded-lg border border-slate-700 text-xs font-semibold bg-slate-800 hover:bg-rose-500/20 hover:border-rose-500 transition cursor-pointer tf-btn-s-${currentQuestionIndex}-${idx}`;
                     btnSai.innerText = "SAI";
 
+                    // Gắn sự kiện chuẩn xác trực tiếp
                     btnDung.onclick = () => checkTfAnswer(idx, true, q, btnDung, btnSai);
                     btnSai.onclick = () => checkTfAnswer(idx, false, q, btnDung, btnSai);
 
